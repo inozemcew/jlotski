@@ -172,18 +172,25 @@ abstract class Cell {
         }
     }
 
-    public boolean isInside(int x, int y){
+    public boolean isInside(int x, int y) {
         if ((x >= this.x*CELLSIZE)
                 && (x < (this.x+1)*CELLSIZE)
                 && (y >= this.y*CELLSIZE)
                 && (y < (this.y+1)*CELLSIZE)) {
-            color = Color.orange;
+            //color = Color.orange;
 
             return true;
         }
         return false;
     }
 
+    /**
+     * Checks if two cells overlapped
+     * @param offset
+     * @param anotherOffset
+     * @param another
+     * @return
+     */
     public boolean isOverlapped(Point offset, Point anotherOffset, Cell another) {
         Point coord = getAbsCoord(offset);
         Point anotherCoord = another.getAbsCoord(anotherOffset);

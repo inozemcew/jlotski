@@ -37,15 +37,22 @@ public class Level implements Cloneable {
 
     public boolean doDrag(int dx, int dy) {
         if (draggingFigure == null) return false;
-        draggingFigure.move(dx, dy, pieces);
+        draggingFigure.move(dx, dy, this.pieces);
         return true;
     }
 
-    public boolean endDrag(int dx, int dy) {
-        if (!doDrag(dx,dy)) return  false;
+    public boolean snap(int dx, int dy){
+        if (draggingFigure == null || draggingFigure.isAligned())
+            return true;
+        Point point = draggingFigure.snapDirection();
+        int sx = dx>0? 1:dx<0?-1:point.x;
+        int sy = dy>0? 1:dy<0?-1:point.y;
+        draggingFigure.move(sx, sy, this.pieces);
+        return false;
+    }
 
+    public void endDrag() {
         draggingFigure = null;
-        return true;
     }
 
     @Override

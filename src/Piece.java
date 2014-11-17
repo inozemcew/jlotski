@@ -95,6 +95,19 @@ abstract class Piece {
         return true;
     }
 
+    boolean isAligned() {
+        return (x % Cell.CELLSIZE == 0) && (y %Cell.CELLSIZE ==0);
+    }
+
+
+    Point snapDirection() {
+        return new Point(x%Cell.CELLSIZE< Cell.CELLSIZE/2?-1:1,y%Cell.CELLSIZE< Cell.CELLSIZE/2?-1:1);
+    }
+
+    void move(Point d, Vector<Piece> pieces){
+        move(d.x, d.y, pieces);
+    }
+
     void move(int dx, int dy, Vector<Piece> pieces){
         if (canMove(dx, 0, pieces))
             x += dx;
