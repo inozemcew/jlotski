@@ -6,13 +6,16 @@ import java.util.Vector;
  * Created by ainozemtsev on 12.11.14.
  */
 abstract class Piece {
-    private int x,y;
-    private Vector<Cell> cells = new Vector<Cell>();
+    private int x=0, y=0;
+    private Vector<Cell> cells = new Vector<>();
+    private Level level;
 
     public Piece() {
-        this.x = 0;
-        this.y = 0;
-        this.cells = new Vector<>();
+        this.level = null;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
     }
 
     void setXY(int x, int y){
@@ -24,7 +27,7 @@ abstract class Piece {
         boolean f = false;
         int x,y = 0;
         for(String s:data){
-            if (s.contains(new StringBuffer(c))) {
+            if (s.contains(new StringBuffer().append(c))) {
                 f = true;
                 for(x=0; x<s.length();x++){
                     if (s.charAt(x) == c) this.addCell(x, y);
@@ -75,6 +78,10 @@ abstract class Piece {
         return false;
     }
 
+    protected boolean allowOverlap(Piece piece){
+        return piece == this;
+    }
+
     boolean isOverlapped(Piece another, int dx, int dy){
         Point offset = new Point(x + dx,y + dy);
         Point anotherOffset = new Point(another.x, another.y);
@@ -88,15 +95,25 @@ abstract class Piece {
     }
 
     boolean canMove(int dx, int dy, Vector<Piece> pieces) {
+        if (!isPieceInside(dx, dy, new Rectangle(level.getSize())))
+            return false;
         for(Piece piece:pieces){
-            if (piece == this) continue;
+            if (allowOverlap(piece)) continue;
             if (isOverlapped(piece, dx, dy)) return false;
         }
         return true;
     }
 
     boolean isAligned() {
-        return (x % Cell.CELLSIZE == 0) && (y %Cell.CELLSIZE ==0);
+        return isXAligned() && isYAligned();
+    }
+
+    boolean isXAligned() {
+        return (x % Cell.CELLSIZE == 0);
+    }
+
+    boolean isYAligned() {
+        return (y %Cell.CELLSIZE == 0);
     }
 
 
@@ -115,11 +132,16 @@ abstract class Piece {
             y += dy;
     }
 
-    boolean isInside(int x, int y){
+    boolean isInsidePiece(int x, int y){
         for (Cell cell:cells){
-            if (cell.isInside(x - this.x,y - this.y)) return true;
+            if (cell.isInsideCell(x - this.x, y - this.y)) return true;
         }
         return false;
+    }
+
+    boolean isPieceInside(int dx, int dy, Rectangle rectangle) {
+        boolean b = cells.stream().allMatch(c -> c.isCellInside(this.x + dx, this.y + dy, rectangle));
+        return b;
     }
 
     void paint(Graphics g){

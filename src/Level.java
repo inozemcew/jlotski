@@ -12,7 +12,7 @@ public class Level implements Cloneable {
     private Vector<String> data = new Vector<String>();
     private String name = "";
     private Vector<Piece> pieces = new Vector<Piece>();
-    private Point size = new Point(0,0);
+    private Dimension size = new Dimension(0,0);
     private Piece draggingFigure = null;
 
     public Level() {
@@ -26,7 +26,7 @@ public class Level implements Cloneable {
     public boolean startDrag(int x, int y) {
         Optional<Piece> f = pieces.stream()
                 .filter(s -> s instanceof Figure)
-                .filter(s -> s.isInside(x,y))
+                .filter(s -> s.isInsidePiece(x, y))
                 .findFirst();
         if (f.isPresent()) {
             draggingFigure = f.get();
@@ -46,7 +46,11 @@ public class Level implements Cloneable {
             return true;
         Point point = draggingFigure.snapDirection();
         int sx = dx>0? 1:dx<0?-1:point.x;
+        if (draggingFigure.isXAligned())
+            sx = 0;
         int sy = dy>0? 1:dy<0?-1:point.y;
+        if (draggingFigure.isYAligned())
+            sy = 0;
         draggingFigure.move(sx, sy, this.pieces);
         return false;
     }
@@ -70,12 +74,12 @@ public class Level implements Cloneable {
         return newLevel;
     }
 
-    public Point getSize() {
-        return new Point(size);
+    public Dimension getSize() {
+        return new Dimension(size);
     }
 
-    public void setSize(Point point) {
-        size.setLocation(point);
+    public void setSize(Dimension size) {
+        this.size.setSize(size);
     }
 
     public boolean loadLevel(BufferedReader r) {
@@ -100,7 +104,7 @@ public class Level implements Cloneable {
             this.data.clear();
             return false;
         }
-        size.setLocation(x*Cell.CELLSIZE,y*Cell.CELLSIZE);
+        size.setSize(x*Cell.CELLSIZE,y*Cell.CELLSIZE);
         createPieces();
         return true;
     }
@@ -129,6 +133,7 @@ public class Level implements Cloneable {
     private void createFigures(char f, char t, PieceCreator F) {
         for (char c = f; c <= t; c++) {
             Piece fig = F.create();
+            fig.setLevel(this);
             if (fig.loadCells(data, c)) pieces.add(fig);
         }
     }
@@ -216,6 +221,11 @@ class MainFigure extends Figure{
     @Override
     protected Cell newCell(int x, int y) {
         return new MainFigureCell(this,x,y);
+    }
+
+    @Override
+    protected boolean allowOverlap(Piece piece) {
+        return super.allowOverlap(piece) || (piece instanceof Gate) || (piece instanceof Target);
     }
 }
 

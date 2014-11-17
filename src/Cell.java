@@ -172,7 +172,7 @@ abstract class Cell {
         }
     }
 
-    public boolean isInside(int x, int y) {
+    public boolean isInsideCell(int x, int y) {
         if ((x >= this.x*CELLSIZE)
                 && (x < (this.x+1)*CELLSIZE)
                 && (y >= this.y*CELLSIZE)
@@ -182,6 +182,11 @@ abstract class Cell {
             return true;
         }
         return false;
+    }
+
+    public boolean isCellInside(int offsetX, int offsetY, Rectangle rectangle) {
+        return rectangle.contains(getAbsCoord(offsetX,offsetY)) &&
+                rectangle.contains(getAbsCoord(offsetX+CELLSIZE-1,offsetY+CELLSIZE-1));
     }
 
     /**

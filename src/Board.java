@@ -97,10 +97,10 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
 
     public void setLevel(int index){
         if (index >= 0 && index <= getLevelsCount()) {
-                currentLevel = levels.elementAt(index).getCopy();
-                Dimension p = new Dimension(currentLevel.getSize().x,currentLevel.getSize().y);
-                setMinimumSize(p);
-                setPreferredSize(p);
+            this.currentLevel = levels.elementAt(index).getCopy();
+            Dimension p = this.currentLevel.getSize();
+            setMinimumSize(p);
+            setPreferredSize(p);
         } else currentLevel = null;
     }
 
