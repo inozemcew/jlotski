@@ -4,15 +4,16 @@ import java.util.Set;
 
 /**
  * Created by ainozemtsev on 12.11.14.
+ * Cell class as element of game pieces
  */
 
-enum Dirs {N,NE,E,SE,S,SW,W,NW}
+
 
 abstract class Cell {
     public static final int CELLSIZE = 32;
     private int x,y; //block coordinates
     private Piece parent;
-    private Set<Dirs> neighbours = new HashSet<Dirs>();
+    private Set<Dirs> neighbours = new HashSet<>();
     protected Color color = Color.green;
 
     public void setNeighbours(Set<Dirs> neighbours) {
@@ -88,7 +89,7 @@ abstract class Cell {
             }
         }
         g.setColor(Color.black);
-        int b=2; int b2=b*2;
+        int b=2;
         int f=0,l=0, s=0,e=0, ds=0, de = 0;
         DrawT d = new DrawT();
         if (!neighbours.contains(Dirs.N)){
@@ -190,11 +191,11 @@ abstract class Cell {
     }
 
     /**
-     * Checks if two cells overlapped
-     * @param offset
-     * @param anotherOffset
-     * @param another
-     * @return
+     * Checks if this cell is overlapped by another one
+     * @param offset offset of this cell within board
+     * @param anotherOffset offset of another cell within board
+     * @param another reference of another cell
+     * @return true if cells are overlapped
      */
     public boolean isOverlapped(Point offset, Point anotherOffset, Cell another) {
         Point coord = getAbsCoord(offset);
