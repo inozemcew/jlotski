@@ -8,10 +8,10 @@ import java.util.Vector;
  * Created by ainozemtsev on 13.11.14.
  */
 
-public class Level implements Cloneable {
-    private Vector<String> data = new Vector<String>();
+public class Level {
+    private Vector<String> data = new Vector<>();
     private String name = "";
-    private Vector<Piece> pieces = new Vector<Piece>();
+    private Vector<Piece> pieces = new Vector<>();
     private Dimension size = new Dimension(0,0);
     private Piece draggingFigure = null;
 
@@ -21,6 +21,10 @@ public class Level implements Cloneable {
     public Level(String name, Vector<String> data) {
         this.name = name;
         this.data = data;
+    }
+
+    final String getName() {
+        return this.name;
     }
 
     public boolean startDrag(int x, int y) {
@@ -58,14 +62,6 @@ public class Level implements Cloneable {
     public void endDrag() {
         draggingFigure = null;
     }
-
-    @Override
-    public Level clone() throws CloneNotSupportedException {
-        Level clone = (Level)super.clone();
-        clone.draggingFigure = null;
-        clone.pieces = (Vector<Piece>)pieces.clone();
-        return clone;
-    } //todo: check correct cloneabi1lity
 
     public Level getCopy() {
         Level newLevel = new Level(name, data);

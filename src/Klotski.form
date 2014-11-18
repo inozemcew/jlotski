@@ -49,6 +49,19 @@
       <hspacer id="3d68a">
         <constraints border-constraint="West"/>
       </hspacer>
+      <grid id="ef1ca" binding="statusPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="31cbd" class="javax.swing.JLabel" binding="statusLabel">
+            <constraints/>
+            <properties>
+              <text value="Welcome to java klotski"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
     </children>
   </grid>
 </form>

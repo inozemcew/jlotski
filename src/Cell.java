@@ -34,17 +34,17 @@ abstract class Cell {
         return y;
     }
 
-    public void move(int dx, int dy){
-        this.x += dx;
-        this.y += dy;
-    }
-
     public Point getAbsCoord(int offsetX, int offsetY) {
         return new Point(offsetX + this.x * CELLSIZE, offsetY + this.y * CELLSIZE);
     }
 
     public Point getAbsCoord(Point offset) {
         return getAbsCoord(offset.x, offset.y);
+    }
+
+    public void move(int dx, int dy){
+        this.x += dx;
+        this.y += dy;
     }
 
     public void paint(int x, int y, Graphics g){
@@ -54,10 +54,10 @@ abstract class Cell {
     }
 
     protected void doPaint(int x, int y, int w, int h, Graphics g){
-        g.setColor(color);
+        g.setColor(this.color);
         g.fillRect(x, y, w, h);
     }
-    protected void doPaint(int x, int y, int w, int h, Graphics g,Color color){
+    protected void doPaint(int x, int y, int w, int h, Graphics g, Color color){
         g.setColor(color);
         g.fillRect(x, y, w, h);
     }
@@ -65,7 +65,7 @@ abstract class Cell {
     protected void doPaintFrame(int x, int y, int w, int h, Graphics g){
         class DrawT {
             void plot(int x,int y){ g.drawLine(x,y,x,y); }
-            void V(int xs, int xe, int ys, int ye, int dys, int dye){V(xs, xe, ys, ye, dys, dye, true);}
+            void V(int xs, int xe, int ys, int ye, int dys, int dye) { V(xs, xe, ys, ye, dys, dye, true); }
             void V(int xs, int xe, int ys, int ye, int dys, int dye, boolean s){
                 for (int x = xs; x <= xe ; x++) {
                     if (s || x==xs || x==xe) g.drawLine(x,ys,x,ye); else {
@@ -90,30 +90,24 @@ abstract class Cell {
         }
         g.setColor(Color.black);
         int b=2;
-        int f=0,l=0, s=0,e=0, ds=0, de = 0;
+        int s = 0, e = 0;
+        int ds = 0, de = 0;
         DrawT d = new DrawT();
         if (!neighbours.contains(Dirs.N)){
-            f = y; l = y+b;
-            if (neighbours.contains(Dirs.E)) {
-                e = x+w; de = 0;
-            } else {
-                e = x+w; de = -1;
-            }
-            if (neighbours.contains(Dirs.W)) {
-                s = x; ds = 0;
-            } else {
-                s = x; ds = 1;
-            }
-
-            d.H(s,e,f,l,ds,de,false);
+            de = neighbours.contains(Dirs.E) ? 0 : -1;
+            ds = neighbours.contains(Dirs.W) ? 0 : 1;
+            d.H(x, x+w, y, y+b, ds, de, false);
         } else {
-            if (neighbours.contains(Dirs.E) && !neighbours.contains(Dirs.NE))
-                d.H(x+w,x+w,y,y+b,-1,0,false);
-            if (neighbours.contains(Dirs.W) && !neighbours.contains(Dirs.NW))
-                d.H(x,x,y,y+b,0,1,false);
+            if (neighbours.contains(Dirs.E) && !neighbours.contains(Dirs.NE)) {
+                d.H(x+w, x+w, y, y+b, -1, 0, false);
+                d.V(x+w-b, x+w, y, y+b, 0, -1);
+            }
+            if (neighbours.contains(Dirs.W) && !neighbours.contains(Dirs.NW)) {
+                d.H(x, x, y, y + b, 0, 1, false);
+                d.V(x, x + b, y, y, 0, 1, false);
+            }
         }
         if (!neighbours.contains(Dirs.S)){
-            f = y+h-b; l = y+h;
             if (neighbours.contains(Dirs.E)) {
                 e = x+w; de = 0;
             } else {
@@ -124,17 +118,19 @@ abstract class Cell {
             } else {
                 s = x + b; ds = -1;
             }
-
-            d.H(s, e, f, l, ds, de);
+            d.H(s, e, y+h-b, y+h, ds, de);
         } else {
-            if (neighbours.contains(Dirs.E) && !neighbours.contains(Dirs.SE))
-                d.H(x+w-b,x+w,y+h-b,y+h,1,0);
-            if (neighbours.contains(Dirs.W) && !neighbours.contains(Dirs.SW))
-                d.H(x,x+b,y+h-b,y+h,0,-1);
+            if (neighbours.contains(Dirs.E) && !neighbours.contains(Dirs.SE)) {
+                d.H(x + w - b, x + w, y + h - b, y + h, 1, 0);
+                d.V(x + w - b, x + w, y + h - b, y + h, 1, 0);
+            }
+            if (neighbours.contains(Dirs.W) && !neighbours.contains(Dirs.SW)) {
+                d.H(x, x + b, y + h - b, y + h, 0, -1);
+                d.V(x,x+b,y+h,y+h,0,-1,false);
+            }
         }
 
         if (!neighbours.contains(Dirs.E)){
-            f = x+w-b; l = x+w;
             if (neighbours.contains(Dirs.N)) {
                 s = y; ds =0;
             } else {
@@ -145,15 +141,9 @@ abstract class Cell {
             } else {
                 e = y+h-b; de = 1;
             }
-            d.V(f,l,s,e,ds,de);
-        } else {
-            if (neighbours.contains(Dirs.N) && !neighbours.contains(Dirs.NE))
-                d.V(x+w-b,x+w,y,y+b,0,-1);
-            if (neighbours.contains(Dirs.S) && !neighbours.contains(Dirs.SE))
-                d.V(x+w-b,x+w,y+h-b,y+h,1,0);
+            d.V(x+w-b, x+w, s, e, ds, de);
         }
         if (!neighbours.contains(Dirs.W)){
-            f = x; l = x+b;
             if (neighbours.contains(Dirs.N)) {
                 s = y; ds =0;
             } else {
@@ -164,30 +154,20 @@ abstract class Cell {
             } else {
                 e = y+h; de = -1;
             }
-            d.V(f,l,s,e,ds,de,false);
-        } else {
-            if (neighbours.contains(Dirs.N) && !neighbours.contains(Dirs.NW))
-                d.V(x,x+b,y,y,0,1,false);
-            if (neighbours.contains(Dirs.S) && !neighbours.contains(Dirs.SW))
-                d.V(x,x+b,y+h,y+h,0,-1,false);
+            d.V(x, x+b, s, e, ds, de, false);
         }
     }
 
     public boolean isInsideCell(int x, int y) {
-        if ((x >= this.x*CELLSIZE)
+        return ((x >= this.x*CELLSIZE)
                 && (x < (this.x+1)*CELLSIZE)
                 && (y >= this.y*CELLSIZE)
-                && (y < (this.y+1)*CELLSIZE)) {
-            //color = Color.orange;
-
-            return true;
-        }
-        return false;
+                && (y < (this.y+1)*CELLSIZE));
     }
 
     public boolean isCellInside(int offsetX, int offsetY, Rectangle rectangle) {
         return rectangle.contains(getAbsCoord(offsetX,offsetY)) &&
-                rectangle.contains(getAbsCoord(offsetX+CELLSIZE-1,offsetY+CELLSIZE-1));
+                rectangle.contains(getAbsCoord(offsetX + CELLSIZE - 1, offsetY + CELLSIZE - 1));
     }
 
     /**

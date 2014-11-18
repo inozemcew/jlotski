@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class Board extends JComponent implements MouseInputListener, ActionListener {
     private Vector<Level> levels = new Vector<>();
-    private Level currentLevel = null;
+    Level currentLevel = null;
     private final String[] levelsFileName = {"/home/aleksey/Projects/java/klotski/out/production/klotski/boards.kts","boards.kts","d:\\Projects\\klotski.py\\src\\boards.kts"};
     private Point oldDragPos;
     private Point oldDirection;
@@ -28,12 +28,8 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {    }
-
-    @Override
     public void mousePressed(MouseEvent e) {
-        if (timer.isRunning())
-            return;
+        if (timer.isRunning()) return;
         oldDragPos = e.getPoint();
         if (currentLevel.startDrag(e.getX(),e.getY())) {
             repaint();
@@ -42,6 +38,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        if (timer.isRunning()) return;
         int dx = e.getX() - oldDragPos.x;
         int dy = e.getY() - oldDragPos.y;
         if (currentLevel.doDrag(dx, dy)) {
@@ -53,10 +50,11 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        if (timer.isRunning()) return;
         int dx = e.getX() - oldDragPos.x;
         int dy = e.getY() - oldDragPos.y;
-        dx = dx==0?oldDirection.x:dx;
-        dy = dy==0?oldDirection.y:dy;
+        dx = dx == 0 ? oldDirection.x : dx;
+        dy = dy == 0 ? oldDirection.y : dy;
         if (currentLevel.snap(dx,dy)) {
             currentLevel.endDrag();
             oldDragPos = e.getPoint();
@@ -76,6 +74,8 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         repaint();
     }
 
+    @Override
+    public void mouseClicked(MouseEvent e) {    }
 
     @Override
     public void mouseEntered(MouseEvent e) {    }

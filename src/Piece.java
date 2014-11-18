@@ -4,6 +4,7 @@ import java.util.Vector;
 
 /**
  * Created by ainozemtsev on 12.11.14.
+ * Abstract base class for game pieces
  */
 abstract class Piece {
     private int x=0, y=0;
@@ -16,11 +17,6 @@ abstract class Piece {
 
     public void setLevel(Level level) {
         this.level = level;
-    }
-
-    void setXY(int x, int y){
-        this.x = x;
-        this.y =y;
     }
 
     public boolean loadCells(final Vector<String> data,char c){
@@ -71,13 +67,6 @@ abstract class Piece {
         return d;
     }
 
-    boolean hasSibling(int x, int y){
-        for (Cell i:this.cells){
-            if (i.getX() == x && i.getY() == y) return true;
-        }
-        return false;
-    }
-
     protected boolean allowOverlap(Piece piece){
         return piece == this;
     }
@@ -115,7 +104,6 @@ abstract class Piece {
     boolean isYAligned() {
         return (y %Cell.CELLSIZE == 0);
     }
-
 
     Point snapDirection() {
         return new Point(x%Cell.CELLSIZE< Cell.CELLSIZE/2?-1:1,y%Cell.CELLSIZE< Cell.CELLSIZE/2?-1:1);

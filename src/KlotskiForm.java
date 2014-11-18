@@ -12,6 +12,8 @@ public class KlotskiForm {
     private JPanel BoardPanel;
     private JSpinner levelSpinner;
     private JButton goButton;
+    private JPanel statusPanel;
+    private JLabel statusLabel;
 
     private Board board;
     private static JFrame frame;
@@ -31,6 +33,7 @@ public class KlotskiForm {
             public void actionPerformed(ActionEvent e) {
                 int index = ((Number)levelSpinner.getValue()).intValue();
                 board.setLevel(index);
+                statusLabel.setText(board.currentLevel.getName());
                 frame.pack();
                 frame.repaint();
             }
