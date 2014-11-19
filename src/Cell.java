@@ -10,7 +10,7 @@ import java.awt.*;
 abstract class Cell {
     public static final int CELLSIZE = 32;
     private int x,y; //block coordinates
-    //private Piece parent;
+    private Piece parent;
     //protected Set<Dirs> neighbours = new HashSet<>();
     final protected Corners corners = new Corners();
     protected Color color = Color.green;
