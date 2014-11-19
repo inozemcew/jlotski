@@ -1,6 +1,4 @@
 import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by ainozemtsev on 12.11.14.
@@ -12,13 +10,11 @@ import java.util.Set;
 abstract class Cell {
     public static final int CELLSIZE = 32;
     private int x,y; //block coordinates
-    private Piece parent;
-    private Set<Dirs> neighbours = new HashSet<>();
+    //private Piece parent;
+    //protected Set<Dirs> neighbours = new HashSet<>();
+    final protected Corners corners = new Corners();
     protected Color color = Color.green;
-
-    public void setNeighbours(Set<Dirs> neighbours) {
-        this.neighbours = neighbours;
-    }
+    protected static CellPainter painter;
 
     public Cell(Piece parent, int dx, int dy) {
         this.parent = parent;
@@ -50,112 +46,21 @@ abstract class Cell {
     public void paint(int x, int y, Graphics g){
         Point p = getAbsCoord(x, y);
         doPaint(p.x, p.y, CELLSIZE, CELLSIZE, g);
-        doPaintFrame(p.x, p.y, CELLSIZE, CELLSIZE, g);
     }
 
     protected void doPaint(int x, int y, int w, int h, Graphics g){
-        g.setColor(this.color);
-        g.fillRect(x, y, w, h);
+        doPaint(x, y, w, h, g, this.color);
     }
     protected void doPaint(int x, int y, int w, int h, Graphics g, Color color){
         g.setColor(color);
-        g.fillRect(x, y, w, h);
-    }
-
-    protected void doPaintFrame(int x, int y, int w, int h, Graphics g){
-        class DrawT {
-            void plot(int x,int y){ g.drawLine(x,y,x,y); }
-            void V(int xs, int xe, int ys, int ye, int dys, int dye) { V(xs, xe, ys, ye, dys, dye, true); }
-            void V(int xs, int xe, int ys, int ye, int dys, int dye, boolean s){
-                for (int x = xs; x <= xe ; x++) {
-                    if (s || x==xs || x==xe) g.drawLine(x,ys,x,ye); else {
-                        if (dys != 0) plot(x,ys);
-                        if (dye != 0) plot(x,ye);
-                    }
-                    ys += dys;
-                    ye += dye;
-                }
-            }
-            void H(int xs, int xe, int ys, int ye, int dxs, int dxe){H( xs, xe, ys, ye, dxs, dxe, true);}
-            void H(int xs, int xe, int ys, int ye, int dxs, int dxe, boolean s){
-                for (int y = ys; y <= ye ; y++) {
-                    if (s || y == ys || y == ye) g.drawLine(xs,y,xe,y); else {
-                        if (dxs != 0) plot(xs, y);
-                        if (dxe != 0) plot(xe, y);
-                    }
-                    xs += dxs;
-                    xe += dxe;
-                }
-            }
-        }
+        painter.setContext(g,x,y,w,h);
+        painter.drawBG();
         g.setColor(Color.black);
-        int b=2;
-        int s = 0, e = 0;
-        int ds = 0, de = 0;
-        DrawT d = new DrawT();
-        if (!neighbours.contains(Dirs.N)){
-            de = neighbours.contains(Dirs.E) ? 0 : -1;
-            ds = neighbours.contains(Dirs.W) ? 0 : 1;
-            d.H(x, x+w, y, y+b, ds, de, false);
-        } else {
-            if (neighbours.contains(Dirs.E) && !neighbours.contains(Dirs.NE)) {
-                d.H(x+w, x+w, y, y+b, -1, 0, false);
-                d.V(x+w-b, x+w, y, y+b, 0, -1);
-            }
-            if (neighbours.contains(Dirs.W) && !neighbours.contains(Dirs.NW)) {
-                d.H(x, x, y, y + b, 0, 1, false);
-                d.V(x, x + b, y, y, 0, 1, false);
-            }
-        }
-        if (!neighbours.contains(Dirs.S)){
-            if (neighbours.contains(Dirs.E)) {
-                e = x+w; de = 0;
-            } else {
-                e = x+w-b; de = 1;
-            }
-            if (neighbours.contains(Dirs.W)) {
-                s = x; ds = 0;
-            } else {
-                s = x + b; ds = -1;
-            }
-            d.H(s, e, y+h-b, y+h, ds, de);
-        } else {
-            if (neighbours.contains(Dirs.E) && !neighbours.contains(Dirs.SE)) {
-                d.H(x + w - b, x + w, y + h - b, y + h, 1, 0);
-                d.V(x + w - b, x + w, y + h - b, y + h, 1, 0);
-            }
-            if (neighbours.contains(Dirs.W) && !neighbours.contains(Dirs.SW)) {
-                d.H(x, x + b, y + h - b, y + h, 0, -1);
-                d.V(x,x+b,y+h,y+h,0,-1,false);
-            }
-        }
-
-        if (!neighbours.contains(Dirs.E)){
-            if (neighbours.contains(Dirs.N)) {
-                s = y; ds =0;
-            } else {
-                s = y + b; ds = -1;
-            }
-            if (neighbours.contains(Dirs.S)) {
-                e = y+h; de = 0;
-            } else {
-                e = y+h-b; de = 1;
-            }
-            d.V(x+w-b, x+w, s, e, ds, de);
-        }
-        if (!neighbours.contains(Dirs.W)){
-            if (neighbours.contains(Dirs.N)) {
-                s = y; ds =0;
-            } else {
-                s = y; ds = 1;
-            }
-            if (neighbours.contains(Dirs.S)) {
-                e = y+h; de = 0;
-            } else {
-                e = y+h; de = -1;
-            }
-            d.V(x, x+b, s, e, ds, de, false);
-        }
+        painter.drawNW(corners.nw);
+        painter.drawNE(corners.ne);
+        painter.drawSW(corners.sw);
+        painter.drawSE(corners.se);
+        painter.drawFG();
     }
 
     public boolean isInsideCell(int x, int y) {

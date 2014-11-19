@@ -136,8 +136,12 @@ public class Level {
 }
 
 class FigureCell extends Cell{
+    static { painter = new CellPainter(); }
+
     public FigureCell(Piece parent, int dx, int dy) {
         super(parent, dx, dy);
+
+
     }
 }
 
@@ -174,11 +178,6 @@ class GateCell extends Cell{
     }
 
     @Override
-    protected void doPaintFrame(int x, int y, int w, int h, Graphics g) {
-        //super.doPaintFrame(x, y, w, h, g);
-    }
-
-    @Override
     protected void doPaint(int x, int y, int w, int h, Graphics g) {
         g.setColor(Color.blue);
         g.draw3DRect(x + w / 3, y + h / 3, w / 3, h / 3, true);
@@ -198,10 +197,6 @@ class TargetCell extends Cell{
         g.fill3DRect(x + w/3, y + h/3, w/3, h/3, true);
     }
 
-    @Override
-    protected void doPaintFrame(int x, int y, int w, int h, Graphics g) {
-        //super.doPaintFrame(x, y, w, h, g);
-    }
 }
 
 

@@ -1,15 +1,16 @@
 import java.awt.*;
 
 public class CellPainter {
-    public static enum Corner {None, Horizontal, Vertical, Both, Inner }
     private Graphics g;
-    private int x, y, w, h;
-    private final int b =2;
+    private int x, y, w, h, xw, yh;
+    private final int b = 8;
 
     public void setContext(Graphics g, int x, int y, int w, int h) {
         this.g = g;
         this.x = x;
         this.y = y;
+        this.xw = x+w;
+        this.yh = y+h;
         this.w = (w+1)/2;
         this.h = (h+1)/2;
     }
@@ -19,10 +20,10 @@ public class CellPainter {
     }
 
     protected void drawBG(){
-        g.fillRect(x, y, w, h);
+        g.fillRect(x, y, xw-x, yh-y);
     }
 
-    protected void drawNW(Corner type) {
+    protected void drawNW(Corners.Type type) {
         switch (type) {
             case Horizontal:
                 H(x, x + w, y, y + b, 0, 0, false);
@@ -42,16 +43,64 @@ public class CellPainter {
         }
     }
 
-    protected void drawNE(Corner type) {
-
+    protected void drawNE(Corners.Type type) {
+        switch (type) {
+            case Horizontal:
+                H(xw-w, xw, y, y+b, 0, 0,false);
+                break;
+            case Vertical:
+                V(xw-b, xw, y, y+h, 0, 0);
+                break;
+            case Both:
+                H(xw-w, xw, y, y+b, 0, -1,false);
+                V(xw-b, xw, y+b , y+h, -1, 0);
+                break;
+            case Inner:
+                V(xw-b, xw, y, y+b, 0, -1);
+                H(xw, xw, y, y+b, -1, 0, false);
+                break;
+            case None:
+        }
     }
 
-    protected void drawSW(Corner type) {
-
+    protected void drawSW(Corners.Type type) {
+        switch (type) {
+            case Horizontal:
+                H(x, x + w, yh - b, yh, 0, 0);
+                break;
+            case Vertical:
+                V(x, x + b, yh-h, yh, 0, 0, false);
+                break;
+            case Both:
+                H(x+b, x + w, yh - b, yh, -1, 0);
+                V(x, x + b, yh-h, yh, 0, -1, false);
+                break;
+            case Inner:
+                H(x, x + b, yh - b, yh, 0, -1);
+                V(x, x + b, yh, yh, -1, 0, false);
+                break;
+            case None:
+        }
     }
 
-    protected void drawSE(Corner type) {
-
+    protected void drawSE(Corners.Type type) {
+        switch (type) {
+            case Horizontal:
+                H(xw-w, xw, yh - b, yh, 0, 0);
+                break;
+            case Vertical:
+                V(xw-b, xw, yh - h, yh, 0, 0);
+                break;
+            case Both:
+                H(xw-h, xw-b, yh - b, yh, 0, 1);
+                V(xw-b, xw, yh-h, yh-b, 0, 1);
+                break;
+            case Inner:
+                H(xw-b, xw, yh - b, yh, 1, 0);
+                V(xw-b, xw, yh-b, yh, 1, 0);
+                break;
+            case None:
+        }
     }
     private void plot(int x,int y){ g.drawLine(x,y,x,y); }
     private void V(int xs, int xe, int ys, int ye, int dys, int dye) { V(xs, xe, ys, ye, dys, dye, true); }

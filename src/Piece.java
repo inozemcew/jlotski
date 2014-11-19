@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.util.HashSet;
 import java.util.Vector;
 
 /**
@@ -32,7 +31,7 @@ abstract class Piece {
             y++;
         }
         for (Cell cell:cells){
-            cell.setNeighbours(findNeighbours(cell));
+            findCorners(cell);
         }
         return f;
     }
@@ -44,27 +43,25 @@ abstract class Piece {
         cells.add(cell);
     }
 
-    private HashSet<Dirs> findNeighbours(Cell cell){
-        HashSet<Dirs> d = new HashSet<>();
+    private void findCorners(Cell cell){
         for(Cell c:cells) {
             if (c != cell) {
                 if (c.getY() == cell.getY()) {
-                    if (c.getX() == cell.getX() - 1) d.add(Dirs.W);
-                    if (c.getX() == cell.getX() + 1) d.add(Dirs.E);
+                    if (c.getX() == cell.getX() - 1) cell.corners.setW();
+                    if (c.getX() == cell.getX() + 1) cell.corners.setE();
                 }
                 if (c.getY() == cell.getY() - 1) {
-                    if (c.getX() == cell.getX() - 1) d.add(Dirs.NW);
-                    if (c.getX() == cell.getX()) d.add(Dirs.N);
-                    if (c.getX() == cell.getX() + 1) d.add(Dirs.NE);
+                    if (c.getX() == cell.getX() - 1) cell.corners.setNW();
+                    if (c.getX() == cell.getX()) cell.corners.setN();
+                    if (c.getX() == cell.getX() + 1) cell.corners.setNE();
                 }
                 if (c.getY() == cell.getY() + 1) {
-                    if (c.getX() == cell.getX() - 1) d.add(Dirs.SW);
-                    if (c.getX() == cell.getX()) d.add(Dirs.S);
-                    if (c.getX() == cell.getX() + 1) d.add(Dirs.SE);
+                    if (c.getX() == cell.getX() - 1) cell.corners.setSW();
+                    if (c.getX() == cell.getX()) cell.corners.setS();
+                    if (c.getX() == cell.getX() + 1) cell.corners.setSE();
                 }
             }
         }
-        return d;
     }
 
     protected boolean allowOverlap(Piece piece){
