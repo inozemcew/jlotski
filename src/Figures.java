@@ -5,7 +5,7 @@ import java.awt.*;
  */
 
 class FigureCell extends Cell{
-    static { painter = new CellPainter(); }
+    static { painter = new CellDrawPainter(); }
 
     public FigureCell(Piece parent, int dx, int dy) {
         super(parent, dx, dy);

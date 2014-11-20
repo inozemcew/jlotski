@@ -14,7 +14,7 @@ abstract class Cell {
     //protected Set<Dirs> neighbours = new HashSet<>();
     final protected Corners corners = new Corners();
     protected Color color = Color.green;
-    protected static CellPainter painter;
+    protected static CellDrawPainter painter;
 
     public Cell(Piece parent, int dx, int dy) {
         this.parent = parent;
