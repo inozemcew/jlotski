@@ -5,7 +5,9 @@ import java.awt.*;
  */
 
 class FigureCell extends Cell{
-    static { painter = new CellDrawPainter(); }
+    protected AbstractCellPainter getPainter(){
+        return new CellImgPainter("/home/aleksey/Projects/java/klotski/img/green1.png");
+    }
 
     public FigureCell(Piece parent, int dx, int dy) {
         super(parent, dx, dy);
@@ -20,6 +22,10 @@ class MainFigureCell extends FigureCell {
         color = Color.red;
     }
 
+    protected AbstractCellPainter getPainter(){
+        return new CellImgPainter("/home/aleksey/Projects/java/klotski/img/red1.png");
+    }
+
     @Override
     protected void doPaint(int x, int y, int w, int h, Graphics g) {
         super.doPaint(x, y, w, h, g);
@@ -30,6 +36,11 @@ class MainFigureCell extends FigureCell {
 
 
 class WallCell extends Cell{
+    @Override
+    protected AbstractCellPainter getPainter() {
+        return new CellImgPainter("/home/aleksey/Projects/java/klotski/img/blue1.png");
+    }
+
     public WallCell(Piece parent, int dx, int dy) {
         super(parent, dx, dy);
     }

@@ -3,6 +3,7 @@ import java.awt.*;
 /**
  * Created by ainozemtsev on 20.11.14.
  */
+
 public abstract class AbstractCellPainter {
     protected Graphics g;
     protected int x, y, w, h, xw, yh;

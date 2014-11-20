@@ -14,12 +14,13 @@ abstract class Cell {
     //protected Set<Dirs> neighbours = new HashSet<>();
     final protected Corners corners = new Corners();
     protected Color color = Color.green;
-    protected static CellDrawPainter painter;
+    private  final AbstractCellPainter painter;
 
     public Cell(Piece parent, int dx, int dy) {
         this.parent = parent;
         this.x = dx;
         this.y = dy;
+        this.painter = getPainter();
     }
 
     public int getX() {
@@ -41,6 +42,10 @@ abstract class Cell {
     public void move(int dx, int dy){
         this.x += dx;
         this.y += dy;
+    }
+
+    protected AbstractCellPainter getPainter(){
+        return new CellDrawPainter();
     }
 
     public void paint(int x, int y, Graphics g){
