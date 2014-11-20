@@ -1,5 +1,11 @@
 /**
- * Created by ainozemtsev on 19.11.14.
+ * <p>Helper class for correct drawing of cell corners
+ * has four fields correspondents to each corner of piece cell Northwest, Northeast, etc..</p>
+ *
+ * <p>Inner enum 'Type' describes possible presence of edges: only Horizontal, only Vertical, Both, None
+ * and a special type Inner that means the corner is inner part of L-shaped junction</p>
+ *
+ * @author <p> Created by ainozemtsev on 19.11.14.</p>
  */
 public class Corners {
     enum Type {
@@ -29,12 +35,17 @@ public class Corners {
             return this;
         }
     }
+
+    /** Corner types for correspondent quadrant */
     Type nw = Type.Both;
     Type ne = Type.Both;
     Type sw = Type.Both;
     Type se = Type.Both;
+
+    // Flags for correct detection of inner corner
     private boolean nwf = false, nef = false, swf = false, sef = false;
 
+    /** setXX methods  */
     public void setN() {
         nw = nw.setNS(nwf);
         ne = ne.setNS(nef);

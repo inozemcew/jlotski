@@ -3,7 +3,15 @@ import java.awt.*;
 public class CellPainter {
     private Graphics g;
     private int x, y, w, h, xw, yh;
-    private final int b = 8;
+    private int b;
+
+    public CellPainter() {
+        this(2);
+    }
+
+    public CellPainter(int b) {
+        this.b = b;
+    }
 
     public void setContext(Graphics g, int x, int y, int w, int h) {
         this.g = g;
