@@ -1,24 +1,22 @@
-
 import javax.swing.*;
-import javax.swing.Timer;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
-import java.awt.List;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.*;
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Vector;
 
 /**
  * Created by ainozemtsev on 11.11.14.
  */
 public class Board extends JComponent implements MouseInputListener, ActionListener {
-    private Vector<Level> levels = new Vector<>();
+    private final Vector<Level> levels = new Vector<>();
     Level currentLevel = null;
     private final String[] levelsFileName = {"/home/aleksey/Projects/java/klotski/out/production/klotski/boards.kts","boards.kts","d:\\Projects\\klotski.py\\src\\boards.kts"};
     private Point oldDragPos;
     private Point oldDirection;
-    private Timer timer = new Timer(10,this);
+    private final Timer timer = new Timer(10,this);
 
     public Board() {
         addMouseListener(this);
@@ -116,7 +114,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
                 doLoadLevels(new FileReader(f));
                 return;
             } catch (FileNotFoundException e) {
-                JOptionPane.showMessageDialog(null, "No levels file found: " + levelsFileName);
+                JOptionPane.showMessageDialog(null, "No levels file found: " + f);
             }
         }
     }

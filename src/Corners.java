@@ -45,7 +45,8 @@ public class Corners {
     // Flags for correct detection of inner corner
     private boolean nwf = false, nef = false, swf = false, sef = false;
 
-    /** setXX methods  */
+    /** setXX methods. Call them for indicate presence of neighbour cell
+     * and correspondent corner type will be corrected */
     public void setN() {
         nw = nw.setNS(nwf);
         ne = ne.setNS(nef);
