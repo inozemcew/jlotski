@@ -37,7 +37,15 @@ public class KlotskiForm {
         });
     }
 
-    private static JMenuBar createMenu() {
+    private void setLevel(ActionEvent e) {
+        int index = Integer.parseInt(e.getActionCommand());
+        board.setLevel(index);
+        statusLabel.setText(board.currentLevel.getName());
+        frame.pack();
+        frame.repaint();
+    }
+
+    private JMenuBar createMenu() {
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("File");
         menu.setMnemonic('F');
@@ -45,6 +53,17 @@ public class KlotskiForm {
         menuItem.setAccelerator(KeyStroke.getKeyStroke("ctrl Q"));
         menuItem.addActionListener(actionEvent -> System.exit(0));
         menu.add(menuItem);
+        menuBar.add(menu);
+        menu = new JMenu("Levels");
+        menu.setMnemonic('L');
+        int i = 0;
+        for (String level:board.getLevelNames()) {
+            menuItem = new JMenuItem(level);
+            menuItem.addActionListener(this::setLevel);
+            menuItem.setActionCommand(String.valueOf(i));
+            i++;
+            menu.add(menuItem);
+        }
         menuBar.add(menu);
         return menuBar;
     }
@@ -60,7 +79,7 @@ public class KlotskiForm {
         KlotskiForm form = new KlotskiForm();
         frame.setContentPane(form.panel1);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setJMenuBar(createMenu());
+        frame.setJMenuBar(form.createMenu());
         frame.pack();
         try {
             frame.setIconImage(ImageIO.read(frame.getClass().getResource("/img/icon.png")));

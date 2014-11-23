@@ -102,6 +102,14 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         return levels.size();
     }
 
+    public Vector<String> getLevelNames() {
+        Vector<String> names = new Vector<>();
+        for(Level level:levels) {
+            names.add(level.getName());
+        }
+        return names;
+    }
+
     public void setLevel(int index){
         if (index >= 0 && index <= getLevelsCount()) {
             this.currentLevel = levels.elementAt(index).getCopy();
