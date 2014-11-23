@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.Vector;
 
 /**
+ * Board component displays game field and handles motion events
  * Created by ainozemtsev on 11.11.14.
  */
 public class Board extends JComponent implements MouseInputListener, ActionListener {
@@ -39,8 +40,9 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         if (timer.isRunning()) return;
         int dx = e.getX() - oldDragPos.x;
         int dy = e.getY() - oldDragPos.y;
-        if (currentLevel.doDrag(dx, dy)) {
-            oldDragPos = e.getPoint();
+        Point p = currentLevel.doDrag(dx, dy);
+        if (p != null) {
+            oldDragPos = p;
             repaint();
         }
         oldDirection = new Point(dx,dy);
@@ -55,6 +57,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         dy = dy == 0 ? oldDirection.y : dy;
         if (currentLevel.snap(dx,dy)) {
             currentLevel.endDrag();
+            checkLevelComplete();
             oldDragPos = e.getPoint();
             repaint();
         } else {
@@ -67,9 +70,15 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     public void actionPerformed(ActionEvent actionEvent) {
         if (currentLevel.snap(oldDragPos.x,oldDragPos.y)) {
             currentLevel.endDrag();
+            checkLevelComplete();
             timer.stop();
         }
         repaint();
+    }
+
+    void checkLevelComplete(){
+        if (currentLevel.isGoal())
+            JOptionPane.showMessageDialog(this,"Level complete!");
     }
 
     @Override

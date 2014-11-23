@@ -5,12 +5,13 @@ import java.util.Optional;
 import java.util.Vector;
 
 /**
+ * Representation of a game level
  * Created by ainozemtsev on 13.11.14.
  */
 
 public class Level {
-    private Vector<String> data = new Vector<>();
     private String name = "";
+    private Vector<String> data = new Vector<>();
     private Vector<Piece> pieces = new Vector<>();
     private Dimension size = new Dimension(0,0);
     private Piece draggingFigure = null;
@@ -34,28 +35,41 @@ public class Level {
                 .findFirst();
         if (f.isPresent()) {
             draggingFigure = f.get();
+            draggingFigure.setDragPoint(x, y);
             return true;
         }
         return false;
     }
 
-    public boolean doDrag(int dx, int dy) {
-        if (draggingFigure == null) return false;
+    public Point doDrag(int dx, int dy) {
+        if (draggingFigure == null)
+            return null;
         draggingFigure.move(dx, dy, this.pieces);
-        return true;
+        return draggingFigure.getDragPoint();
     }
 
     public boolean snap(int dx, int dy){
         if (draggingFigure == null || draggingFigure.isAligned())
             return true;
         Point point = draggingFigure.snapDirection();
-        int sx = dx>0? 1:dx<0?-1:point.x;
+        int sx = dx > 0? 1: dx < 0 ? -1 : point.x;
         if (draggingFigure.isXAligned())
             sx = 0;
-        int sy = dy>0? 1:dy<0?-1:point.y;
+        int sy = dy > 0 ? 1 : dy < 0 ? -1 : point.y;
         if (draggingFigure.isYAligned())
             sy = 0;
         draggingFigure.move(sx, sy, this.pieces);
+        return false;
+    }
+
+    public boolean isGoal() {
+        Piece main = null,target = null;
+        for (Piece p:pieces) {
+            if (p instanceof MainFigure) main = p;
+            if (p instanceof Target) target =p;
+            if ((main != null)&& (target != null))
+                return main.isCoincided(target, 0, 0);
+        }
         return false;
     }
 

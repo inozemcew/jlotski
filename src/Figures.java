@@ -1,18 +1,17 @@
 import java.awt.*;
 
 /**
+ * Implementation of Piece subclasses for various game objects
  * Created by ainozemtsev on 20.11.14.
  */
 
 class FigureCell extends Cell{
     protected AbstractCellPainter getPainter(){
-        return new CellImgPainter("/home/aleksey/Projects/java/klotski/img/green1.png");
+        return new CellImgPainter("/img/green1.png");
     }
 
     public FigureCell(Piece parent, int dx, int dy) {
         super(parent, dx, dy);
-
-
     }
 }
 
@@ -23,7 +22,7 @@ class MainFigureCell extends FigureCell {
     }
 
     protected AbstractCellPainter getPainter(){
-        return new CellImgPainter("/home/aleksey/Projects/java/klotski/img/red1.png");
+        return new CellImgPainter("/img/red1.png");
     }
 
     @Override
@@ -38,7 +37,7 @@ class MainFigureCell extends FigureCell {
 class WallCell extends Cell{
     @Override
     protected AbstractCellPainter getPainter() {
-        return new CellImgPainter("/home/aleksey/Projects/java/klotski/img/blue1.png");
+        return new CellImgPainter("/img/blue1.png");
     }
 
     public WallCell(Piece parent, int dx, int dy) {
@@ -84,6 +83,11 @@ class Figure extends Piece{
     @Override
     protected Cell newCell(int x, int y) {
         return new FigureCell(this,x,y);
+    }
+
+    @Override
+    protected boolean allowOverlap(Piece piece) {
+        return super.allowOverlap(piece) || (piece instanceof Target);
     }
 }
 

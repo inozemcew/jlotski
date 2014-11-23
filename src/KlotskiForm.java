@@ -1,8 +1,11 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 /**
+ * Java version of klotski game
  * Created by ainozemtsev on 10.11.14.
  */
 public class KlotskiForm {
@@ -34,6 +37,18 @@ public class KlotskiForm {
         });
     }
 
+    private static JMenuBar createMenu() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("File");
+        menu.setMnemonic('F');
+        JMenuItem menuItem = new JMenuItem("Exit");
+        menuItem.setAccelerator(KeyStroke.getKeyStroke("ctrl Q"));
+        menuItem.addActionListener(actionEvent -> System.exit(0));
+        menu.add(menuItem);
+        menuBar.add(menu);
+        return menuBar;
+    }
+
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -45,7 +60,13 @@ public class KlotskiForm {
         KlotskiForm form = new KlotskiForm();
         frame.setContentPane(form.panel1);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setJMenuBar(createMenu());
         frame.pack();
+        try {
+            frame.setIconImage(ImageIO.read(frame.getClass().getResource("/img/icon.png")));
+        } catch (IOException e) {
+            System.err.println("No application icon found");
+        }
         frame.setVisible(true);
     }
 

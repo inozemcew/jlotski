@@ -144,6 +144,17 @@ Possible pieces are :
 @      ..  @
 
 
+<Dad's puzzle>
+@  ######  @
+@  #**bb#  @
+@  #**cc#  @
+@  #de  #  @
+@  #fghh#  @
+@  #fgii#  @
+@  #--###  @
+@      ..  @
+@      ..  @
+
 <Success>
 @         a@
 @ #######  @
