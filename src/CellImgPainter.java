@@ -1,5 +1,4 @@
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -28,15 +27,30 @@ import java.io.IOException;
 
 public class CellImgPainter extends AbstractCellPainter {
     private BufferedImage image = null;
-    private int x1,x2,x3; //todo: implement usage of different size images
+    private int sx,sy;
 
     public CellImgPainter(String fileName) {
         try {
             image = ImageIO.read(getClass().getResource(fileName));
+            sx = image.getWidth() / 6;
+            sy = image.getHeight() /6;
         } catch (IOException e) {
             System.err.printf("No image file %s found", fileName);
             System.exit(1);
         }
+    }
+
+    private void drawCorner(int x, int y, Corners.Type type, int [][] array) {
+        int px=0;
+        int py=0;
+        switch (type) {
+            case Both:          { px = array[0][0]; py = array[0][1]; } break;
+            case Horizontal:    { px = array[1][0]; py = array[1][1]; } break;
+            case Vertical:      { px = array[2][0]; py = array[2][1]; } break;
+            case None:          { px = array[3][0]; py = array[3][1]; } break;
+            case Inner:         { px = array[4][0]; py = array[4][1]; } break;
+        }
+        g.drawImage(image, x, y, x+w, y+h, px*sx, py*sy, (px+1)*sx-1,(py+1)*sy-1,null);
     }
 
     @Override
@@ -51,53 +65,25 @@ public class CellImgPainter extends AbstractCellPainter {
 
     @Override
     protected void drawNW(Corners.Type type) {
-        Point p = new Point();
-        switch (type) {
-            case Both: p.setLocation(0,0); break;
-            case Horizontal: p.setLocation(32, 0); break;
-            case Vertical: p.setLocation(0, 32); break;
-            case None: p.setLocation(64, 64); break;
-            case Inner: p.setLocation(48, 48); break;
-        }
-        g.drawImage(image,x,y,x+w,y+h,p.x,p.y,p.x+w,p.y+h,null);
+        int array[][] = {{0, 0}, {2, 0}, {0, 2}, {4, 4}, {3, 3}};
+        drawCorner(x, y, type, array);
     }
 
     @Override
     protected void drawNE(Corners.Type type) {
-        Point p = new Point();
-        switch (type) {
-            case Both: p.setLocation(80, 0); break;
-            case Horizontal: p.setLocation(16, 0); break;
-            case Vertical: p.setLocation(80, 32); break;
-            case None: p.setLocation(16, 32); break;
-            case Inner: p.setLocation(32,48); break;
-        }
-        g.drawImage(image,x+w,y,xw,y+h,p.x,p.y,p.x+w,p.y+h,null);
+        int array[][] = {{5, 0}, {1, 0}, {5, 4}, {1, 2}, {2, 3}};
+        drawCorner(x + w, y, type, array);
     }
 
     @Override
     protected void drawSW(Corners.Type type) {
-        Point p = new Point();
-        switch (type) {
-            case Both: p.setLocation(0, 80); break;
-            case Horizontal: p.setLocation(32, 80); break;
-            case Vertical: p.setLocation(0, 16); break;
-            case None: p.setLocation(16, 64); break;
-            case Inner: p.setLocation(48, 32); break;
-        }
-        g.drawImage(image,x,y+h,x+w,yh,p.x,p.y,p.x+w,p.y+h,null);
+        int array[][] = {{0, 5}, {2, 5}, {0, 1}, {1, 4}, {3, 2}};
+        drawCorner(x, y + h, type, array);
     }
 
     @Override
     protected void drawSE(Corners.Type type) {
-        Point p = new Point();
-        switch (type) {
-            case Both: p.setLocation(80,80); break;
-            case Horizontal: p.setLocation(16,80); break;
-            case Vertical: p.setLocation(80,16); break;
-            case None: p.setLocation(16,16); break;
-            case Inner: p.setLocation(32,32); break;
-        }
-        g.drawImage(image,x+w,y+h,xw,yh,p.x,p.y,p.x+w,p.y+h,null);
+        int array[][] = {{5, 5}, {1, 5}, {5, 1}, {1, 1}, {2, 2}};
+        drawCorner(x + w, y + h, type, array);
     }
 }
