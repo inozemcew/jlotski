@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Java version of klotski game
@@ -19,6 +20,7 @@ public class KlotskiForm {
 
     private Board board;
     private static JFrame frame;
+    private JMenuBar menuBar;
 
     public KlotskiForm() {
         this.board = new Board();
@@ -40,13 +42,15 @@ public class KlotskiForm {
     private void setLevel(ActionEvent e) {
         int index = Integer.parseInt(e.getActionCommand());
         board.setLevel(index);
+        levelSpinner.setValue(index);
+        menuBar.getMenu(1).getItem(index).setSelected(true);
         statusLabel.setText(board.currentLevel.getName());
         frame.pack();
         frame.repaint();
     }
 
     private JMenuBar createMenu() {
-        JMenuBar menuBar = new JMenuBar();
+        menuBar = new JMenuBar();
         JMenu menu = new JMenu("File");
         menu.setMnemonic('F');
         JMenuItem menuItem = new JMenuItem("Exit");
@@ -56,12 +60,14 @@ public class KlotskiForm {
         menuBar.add(menu);
         menu = new JMenu("Levels");
         menu.setMnemonic('L');
+        ButtonGroup group = new ButtonGroup();
         int i = 0;
         for (String level:board.getLevelNames()) {
-            menuItem = new JMenuItem(level);
+            menuItem = new JRadioButtonMenuItem(level);
             menuItem.addActionListener(this::setLevel);
             menuItem.setActionCommand(String.valueOf(i));
             i++;
+            group.add(menuItem);
             menu.add(menuItem);
         }
         menuBar.add(menu);
@@ -82,7 +88,9 @@ public class KlotskiForm {
         frame.setJMenuBar(form.createMenu());
         frame.pack();
         try {
-            frame.setIconImage(ImageIO.read(frame.getClass().getResource("/img/icon.png")));
+            URL icon = frame.getClass().getResource("/img/icon.png");
+            if (icon == null) throw new IOException();
+            frame.setIconImage(ImageIO.read(icon));
         } catch (IOException e) {
             System.err.println("No application icon found");
         }
