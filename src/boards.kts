@@ -231,6 +231,34 @@ Possible pieces are :
 @       .. @
 @        . @
 
+<Hanoi>
+@ ######     ###### @
+@ #****##   ##    # @
+@ #bbbbb## ##     # @
+@ #cccccc###      # @
+@ #ddddddd#       # @
+@ #eeeeeeee       # @
+@ ########        # @
+@        ##       # @
+@         ##      # @
+@          ##     # @
+@           ##    # @
+@            #----# @
+@             ....  @
+
+<Escape>
+@  ###      @
+@  #*###### @
+@  #abccc # @
+@  #adeef## @
+@  #adghi#  @
+@ ##jkkhi#  @
+@ # mmmni#  @
+@ ###### #  @
+@      #-#  @
+@         . @
+
+
 <Ithaca>
 @.aaaaaaaaaaaaaaaaab@
 @..  cddeffffffffffb@
