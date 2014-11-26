@@ -1,7 +1,5 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 
@@ -10,13 +8,13 @@ import java.net.URL;
  * Created by ainozemtsev on 10.11.14.
  */
 public class KlotskiForm {
-    private JPanel panel1;
+    private JPanel boardPanel;
     private JButton exitButton;
-    private JPanel BoardPanel;
     private JSpinner levelSpinner;
-    private JButton goButton;
+    private JButton resetButton;
     private JPanel statusPanel;
     private JLabel statusLabel;
+    private JButton backButton;
 
     private Board board;
     private static JFrame frame;
@@ -24,23 +22,13 @@ public class KlotskiForm {
 
     public KlotskiForm() {
         this.board = new Board();
-        this.BoardPanel.add(this.board);
+        this.boardPanel.add(this.board);
         levelSpinner.setModel(new SpinnerNumberModel(1,1,board.getLevelsCount()-1,1));
         exitButton.addActionListener(e -> System.exit(0));
-        goButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int index = ((Number)levelSpinner.getValue()).intValue();
-                board.setLevel(index);
-                statusLabel.setText(board.currentLevel.getName());
-                frame.pack();
-                frame.repaint();
-            }
-        });
+        resetButton.addActionListener(e -> setLevel(board.getCurrentLevelNumber()));
     }
 
-    private void setLevel(ActionEvent e) {
-        int index = Integer.parseInt(e.getActionCommand());
+    private void setLevel(int index) {
         board.setLevel(index);
         levelSpinner.setValue(index);
         menuBar.getMenu(1).getItem(index).setSelected(true);
@@ -64,7 +52,7 @@ public class KlotskiForm {
         int i = 0;
         for (String level:board.getLevelNames()) {
             menuItem = new JRadioButtonMenuItem(level);
-            menuItem.addActionListener(this::setLevel);
+            menuItem.addActionListener(event -> setLevel(Integer.parseInt(event.getActionCommand())));
             menuItem.setActionCommand(String.valueOf(i));
             i++;
             group.add(menuItem);
@@ -83,7 +71,7 @@ public class KlotskiForm {
         }
         frame = new JFrame("Klotski");
         KlotskiForm form = new KlotskiForm();
-        frame.setContentPane(form.panel1);
+        frame.setContentPane(form.boardPanel);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setJMenuBar(form.createMenu());
         frame.pack();

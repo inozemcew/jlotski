@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="KlotskiForm">
-  <grid id="27dc6" binding="panel1" default-binding="true" layout-manager="BorderLayout" hgap="0" vgap="0">
+  <grid id="27dc6" binding="boardPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
       <xy x="20" y="20" width="500" height="400"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="6bb77" binding="BoardPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
-        <constraints border-constraint="Center"/>
-        <properties>
-          <minimumSize width="256" height="256"/>
-        </properties>
-        <border type="none"/>
-        <children/>
-      </grid>
       <toolbar id="e59ab">
         <constraints border-constraint="North"/>
         <properties/>
@@ -23,7 +15,23 @@
           <component id="1855a" class="javax.swing.JButton" binding="exitButton" default-binding="true">
             <constraints/>
             <properties>
+              <focusable value="false"/>
               <text value="Exit"/>
+            </properties>
+          </component>
+          <component id="d23e2" class="javax.swing.JButton" binding="backButton">
+            <constraints/>
+            <properties>
+              <focusable value="false"/>
+              <text value="Back"/>
+            </properties>
+          </component>
+          <component id="1a2fa" class="javax.swing.JButton" binding="resetButton" default-binding="true">
+            <constraints/>
+            <properties>
+              <focusable value="false"/>
+              <hideActionText value="false"/>
+              <text value="Reset"/>
             </properties>
           </component>
           <component id="4906b" class="javax.swing.JToolBar$Separator">
@@ -33,13 +41,6 @@
           <component id="cb6a5" class="javax.swing.JSpinner" binding="levelSpinner">
             <constraints/>
             <properties/>
-          </component>
-          <component id="1a2fa" class="javax.swing.JButton" binding="goButton" default-binding="true">
-            <constraints/>
-            <properties>
-              <hideActionText value="false"/>
-              <text value="Go"/>
-            </properties>
           </component>
           <hspacer id="eee70">
             <constraints/>

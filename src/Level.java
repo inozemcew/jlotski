@@ -33,12 +33,9 @@ public class Level {
                 .filter(s -> s instanceof Figure)
                 .filter(s -> s.isInsidePiece(x, y))
                 .findFirst();
-        if (f.isPresent()) {
-            draggingFigure = f.get();
-            draggingFigure.setDragPoint(x, y);
-            return true;
-        }
-        return false;
+        draggingFigure = f.orElse(null);
+        f.ifPresent(piece -> piece.setDragPoint(x, y));
+        return f.isPresent();
     }
 
     public Point doDrag(int dx, int dy) {

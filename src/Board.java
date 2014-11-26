@@ -14,6 +14,7 @@ import java.util.Vector;
 public class Board extends JComponent implements MouseInputListener, ActionListener {
     private final Vector<Level> levels = new Vector<>();
     Level currentLevel = null;
+    private int currentLevelNumber;
     private final String[] levelsFileName = {"/home/aleksey/Projects/java/klotski/out/production/klotski/boards.kts","boards.kts","d:\\Projects\\klotski.py\\src\\boards.kts"};
     private Point oldDragPos;
     private Point oldDirection;
@@ -102,6 +103,10 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         return levels.size();
     }
 
+    public int getCurrentLevelNumber() {
+        return currentLevelNumber;
+    }
+
     public Vector<String> getLevelNames() {
         Vector<String> names = new Vector<>();
         for(Level level:levels) {
@@ -113,9 +118,11 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     public void setLevel(int index){
         if (index >= 0 && index <= getLevelsCount()) {
             this.currentLevel = levels.elementAt(index).getCopy();
+            this.currentLevelNumber = index;
             Dimension p = this.currentLevel.getSize();
             setMinimumSize(p);
             setPreferredSize(p);
+
         } else currentLevel = null;
     }
 
