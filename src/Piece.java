@@ -1,7 +1,8 @@
 import java.awt.*;
 import java.util.Vector;
-import static java.lang.Math.min;
+
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 /**
  * Created by ainozemtsev on 12.11.14.
@@ -16,6 +17,10 @@ abstract class Piece {
     public Piece() {
         this.level = null;
         cells = new Vector<>();
+    }
+
+    public MoveRecord getMoveRecord() {
+        return new MoveRecord(this.x, this.y, this);
     }
 
     public void setLevel(Level level) {

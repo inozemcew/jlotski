@@ -2,6 +2,7 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Stack;
 import java.util.Vector;
 
 /**
@@ -15,6 +16,9 @@ public class Level {
     private Vector<Piece> pieces = new Vector<>();
     private Dimension size = new Dimension(0,0);
     private Piece draggingFigure = null;
+
+    private Stack<MoveRecord> moves = new Stack<>();
+    private MoveRecord moveRecord = null;
 
     public Level() {
     }
@@ -34,7 +38,10 @@ public class Level {
                 .filter(s -> s.isInsidePiece(x, y))
                 .findFirst();
         draggingFigure = f.orElse(null);
-        f.ifPresent(piece -> piece.setDragPoint(x, y));
+        if (draggingFigure != null) {
+            draggingFigure.setDragPoint(x, y);
+            moveRecord = draggingFigure.getMoveRecord();
+        }
         return f.isPresent();
     }
 
@@ -71,7 +78,18 @@ public class Level {
     }
 
     public void endDrag() {
+        MoveRecord move = draggingFigure.getMoveRecord();
+        if (!moveRecord.equals(move)) {
+            if (moves.peek().equals(move))
+                moves.pop();
+            else
+                moves.push(move);
+        }
         draggingFigure = null;
+    }
+
+    public int movesCount() {
+        return moves.size();
     }
 
     public Level getCopy() {
