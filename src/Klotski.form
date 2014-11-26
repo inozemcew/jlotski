@@ -50,15 +50,21 @@
       <hspacer id="3d68a">
         <constraints border-constraint="West"/>
       </hspacer>
-      <grid id="ef1ca" binding="statusPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+      <grid id="ef1ca" binding="statusPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints border-constraint="South"/>
         <properties/>
         <border type="none"/>
         <children>
           <component id="31cbd" class="javax.swing.JLabel" binding="statusLabel">
-            <constraints/>
+            <constraints border-constraint="West"/>
             <properties>
               <text value="Welcome to java klotski"/>
+            </properties>
+          </component>
+          <component id="2beec" class="javax.swing.JLabel" binding="movesLabel">
+            <constraints border-constraint="East"/>
+            <properties>
+              <text value=""/>
             </properties>
           </component>
         </children>

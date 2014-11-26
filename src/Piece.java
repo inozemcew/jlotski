@@ -19,6 +19,10 @@ abstract class Piece {
         cells = new Vector<>();
     }
 
+    public void setXY(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
     public MoveRecord getMoveRecord() {
         return new MoveRecord(this.x, this.y, this);
     }

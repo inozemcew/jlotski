@@ -19,12 +19,17 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     private Point oldDragPos;
     private Point oldDirection;
     private final Timer timer = new Timer(10,this);
+    private ActionListener moveListener = null;
 
     public Board() {
         addMouseListener(this);
         addMouseMotionListener(this);
         this.setPreferredSize(new Dimension(300,400));
         loadLevels();
+    }
+
+    public void setMoveListener(ActionListener listener) {
+        this.moveListener = listener;
     }
 
     @Override
@@ -58,6 +63,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         dy = dy == 0 ? oldDirection.y : dy;
         if (currentLevel.snap(dx,dy)) {
             currentLevel.endDrag();
+            moveListenerNotify();
             checkLevelComplete();
             oldDragPos = e.getPoint();
             repaint();
@@ -71,13 +77,22 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     public void actionPerformed(ActionEvent actionEvent) {
         if (currentLevel.snap(oldDragPos.x,oldDragPos.y)) {
             currentLevel.endDrag();
+            moveListenerNotify();
             checkLevelComplete();
             timer.stop();
         }
         repaint();
     }
 
-    void checkLevelComplete(){
+    void moveListenerNotify() {
+        if (moveListener != null)
+            moveListener.actionPerformed(new ActionEvent(this,
+                    ActionEvent.ACTION_LAST+1,
+                    Integer.toString(currentLevel.getMovesCount() ))
+            );
+    }
+
+    void checkLevelComplete() {
         if (currentLevel.isGoal())
             JOptionPane.showMessageDialog(this,"Level complete!");
     }

@@ -78,18 +78,28 @@ public class Level {
     }
 
     public void endDrag() {
+        if (draggingFigure == null) return;
         MoveRecord move = draggingFigure.getMoveRecord();
         if (!moveRecord.equals(move)) {
-            if (moves.peek().equals(move))
+            if (!moves.empty() && moves.peek().equals(move))
                 moves.pop();
             else
-                moves.push(move);
+                moves.push(moveRecord);
         }
         draggingFigure = null;
     }
 
-    public int movesCount() {
+    public int getMovesCount() {
         return moves.size();
+    }
+
+    public boolean undo() {
+        if (!moves.empty()) {
+            MoveRecord move = moves.pop();
+            move.piece.setXY(move.x, move.y);
+            return true;
+        }
+        return false;
     }
 
     public Level getCopy() {

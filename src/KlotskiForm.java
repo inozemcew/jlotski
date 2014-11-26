@@ -15,6 +15,7 @@ public class KlotskiForm {
     private JPanel statusPanel;
     private JLabel statusLabel;
     private JButton backButton;
+    private JLabel movesLabel;
 
     private Board board;
     private static JFrame frame;
@@ -23,9 +24,17 @@ public class KlotskiForm {
     public KlotskiForm() {
         this.board = new Board();
         this.boardPanel.add(this.board);
-        levelSpinner.setModel(new SpinnerNumberModel(1,1,board.getLevelsCount()-1,1));
+        levelSpinner.setModel(new SpinnerNumberModel(1, 1, board.getLevelsCount() - 1, 1));
         exitButton.addActionListener(e -> System.exit(0));
         resetButton.addActionListener(e -> setLevel(board.getCurrentLevelNumber()));
+        this.board.setMoveListener(e -> movesLabel.setText("Moves made: " + e.getActionCommand()));
+        backButton.addActionListener(e -> undo() );
+    }
+
+    private void undo() {
+        board.currentLevel.undo();
+        movesLabel.setText("Moves made: " + Integer.toString(board.currentLevel.getMovesCount()));
+        frame.repaint();
     }
 
     private void setLevel(int index) {
@@ -33,6 +42,7 @@ public class KlotskiForm {
         levelSpinner.setValue(index);
         menuBar.getMenu(1).getItem(index).setSelected(true);
         statusLabel.setText(board.currentLevel.getName());
+        movesLabel.setText("");
         frame.pack();
         frame.repaint();
     }
