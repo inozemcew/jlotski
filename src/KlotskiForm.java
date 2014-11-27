@@ -40,7 +40,7 @@ public class KlotskiForm {
     private void setLevel(int index) {
         board.setLevel(index);
         levelSpinner.setValue(index);
-        menuBar.getMenu(1).getItem(index).setSelected(true);
+        menuBar.getMenu(1).getItem(index-1).setSelected(true);
         statusLabel.setText(board.currentLevel.getName());
         movesLabel.setText("");
         frame.pack();
@@ -61,12 +61,14 @@ public class KlotskiForm {
         ButtonGroup group = new ButtonGroup();
         int i = 0;
         for (String level:board.getLevelNames()) {
-            menuItem = new JRadioButtonMenuItem(level);
-            menuItem.addActionListener(event -> setLevel(Integer.parseInt(event.getActionCommand())));
-            menuItem.setActionCommand(String.valueOf(i));
+            if (i > 0) {
+                menuItem = new JRadioButtonMenuItem(level);
+                menuItem.addActionListener(event -> setLevel(Integer.parseInt(event.getActionCommand())));
+                menuItem.setActionCommand(String.valueOf(i));
+                group.add(menuItem);
+                menu.add(menuItem);
+            }
             i++;
-            group.add(menuItem);
-            menu.add(menuItem);
         }
         menuBar.add(menu);
         return menuBar;

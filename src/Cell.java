@@ -31,11 +31,11 @@ abstract class Cell {
         return y;
     }
 
-    public Point getAbsCoord(int offsetX, int offsetY) {
+    private Point getAbsCoord(int offsetX, int offsetY) {
         return new Point(offsetX + this.x * CELLSIZE, offsetY + this.y * CELLSIZE);
     }
 
-    public Point getAbsCoord(Point offset) {
+    private Point getAbsCoord(Point offset) {
         return getAbsCoord(offset.x, offset.y);
     }
 

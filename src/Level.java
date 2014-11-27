@@ -28,7 +28,7 @@ public class Level {
         this.data = data;
     }
 
-    final String getName() {
+    public final String getName() {
         return this.name;
     }
 

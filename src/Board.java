@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 /**
  * Board component displays game field and handles motion events
@@ -15,11 +16,12 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     private final Vector<Level> levels = new Vector<>();
     Level currentLevel = null;
     private int currentLevelNumber;
-    private final String[] levelsFileName = {"/home/aleksey/Projects/java/klotski/out/production/klotski/boards.kts","boards.kts","d:\\Projects\\klotski.py\\src\\boards.kts"};
+    private final String levelsFileName = "/boards.kts";
     private Point oldDragPos;
     private Point oldDirection;
     private final Timer timer = new Timer(10,this);
     private ActionListener moveListener = null;
+    private boolean locked = true;
 
     public Board() {
         addMouseListener(this);
@@ -28,13 +30,49 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         loadLevels();
     }
 
+    public int getLevelsCount(){
+        return levels.size();
+    }
+
+    public int getCurrentLevelNumber() {
+        return currentLevelNumber;
+    }
+
+    public Vector<String> getLevelNames() {
+        Vector<String> names = levels.stream()
+                .map(Level::getName)
+                .collect(Collectors.toCollection(() -> new Vector<>()));
+        return names;
+    }
+
+    public void setLevel(int index){
+        if (index >= 0 && index <= getLevelsCount()) {
+            this.currentLevel = levels.elementAt(index).getCopy();
+            this.currentLevelNumber = index;
+            Dimension p = this.currentLevel.getSize();
+            setMinimumSize(p);
+            setPreferredSize(p);
+            setLock(index<1);
+        } else currentLevel = null;
+    }
+
+    public void setLock(boolean lock) {
+        this.locked = lock;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {    }
     public void setMoveListener(ActionListener listener) {
         this.moveListener = listener;
     }
 
     @Override
+    public void mouseExited(MouseEvent e) {    }
+
+    @Override
     public void mousePressed(MouseEvent e) {
-        if (timer.isRunning()) return;
+        if (locked || timer.isRunning())
+            return;
         oldDragPos = e.getPoint();
         if (currentLevel.startDrag(e.getX(),e.getY())) {
             repaint();
@@ -43,7 +81,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (timer.isRunning()) return;
+        if (locked || timer.isRunning()) return;
         int dx = e.getX() - oldDragPos.x;
         int dy = e.getY() - oldDragPos.y;
         Point p = currentLevel.doDrag(dx, dy);
@@ -55,8 +93,14 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     }
 
     @Override
+    public void mouseEntered(MouseEvent e) {    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {    }
+
+    @Override
     public void mouseReleased(MouseEvent e) {
-        if (timer.isRunning()) return;
+        if (locked ||timer.isRunning()) return;
         int dx = e.getX() - oldDragPos.x;
         int dy = e.getY() - oldDragPos.y;
         dx = dx == 0 ? oldDirection.x : dx;
@@ -84,28 +128,20 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         repaint();
     }
 
-    void moveListenerNotify() {
+    private  void moveListenerNotify() {
         if (moveListener != null)
             moveListener.actionPerformed(new ActionEvent(this,
-                    ActionEvent.ACTION_LAST+1,
-                    Integer.toString(currentLevel.getMovesCount() ))
+                            ActionEvent.ACTION_LAST+1,
+                            Integer.toString(currentLevel.getMovesCount() ))
             );
     }
 
-    void checkLevelComplete() {
-        if (currentLevel.isGoal())
-            JOptionPane.showMessageDialog(this,"Level complete!");
+    private void checkLevelComplete() {
+        if (currentLevel.isGoal()) {
+            JOptionPane.showMessageDialog(this, "Level complete!");
+            setLock(true);
+        }
     }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {    }
-    @Override
-    public void mouseExited(MouseEvent e) {    }
-    @Override
-    public void mouseMoved(MouseEvent e) {    }
 
     @Override
     public void paint(Graphics g) {
@@ -114,48 +150,20 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         if (currentLevel != null) currentLevel.paint(g);
     }
 
-    public int getLevelsCount(){
-        return levels.size();
-    }
-
-    public int getCurrentLevelNumber() {
-        return currentLevelNumber;
-    }
-
-    public Vector<String> getLevelNames() {
-        Vector<String> names = new Vector<>();
-        for(Level level:levels) {
-            names.add(level.getName());
-        }
-        return names;
-    }
-
-    public void setLevel(int index){
-        if (index >= 0 && index <= getLevelsCount()) {
-            this.currentLevel = levels.elementAt(index).getCopy();
-            this.currentLevelNumber = index;
-            Dimension p = this.currentLevel.getSize();
-            setMinimumSize(p);
-            setPreferredSize(p);
-
-        } else currentLevel = null;
-    }
-
-    void loadLevels() {
-        InputStream s = getClass().getResourceAsStream("/boards.kts");
+    private void loadLevels() {
+        InputStream s = getClass().getResourceAsStream(levelsFileName);
         if (s != null) {
             doLoadLevels(new InputStreamReader(s));
             return;
         }
         System.err.println("No levels found in jar file. Searching around...");
-        for(String f:levelsFileName) {
+        String f = levelsFileName;
             try {
                 doLoadLevels(new FileReader(f));
                 return;
             } catch (FileNotFoundException e) {
                 JOptionPane.showMessageDialog(null, "No levels file found: " + f);
             }
-        }
     }
 
     private void doLoadLevels(InputStreamReader f) {
