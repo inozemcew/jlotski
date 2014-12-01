@@ -165,7 +165,7 @@ public class Level {
         createFigures('.','.',Target::new);
     }
 
-    private void createFigures(char f, char t, PieceCreator F) {
+    private void createFigures(char f, char t, PieceCreator<? extends Piece> F) {
         for (char c = f; c <= t; c++) {
             Piece fig = F.create();
             fig.setLevel(this);
