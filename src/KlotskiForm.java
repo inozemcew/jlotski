@@ -49,8 +49,8 @@ public class KlotskiForm {
 
     private JMenuBar createMenu() {
         menuBar = new JMenuBar();
-        JMenu menu = new JMenu("File");
-        menu.setMnemonic('F');
+        JMenu menu = new JMenu("Game");
+        menu.setMnemonic('G');
         JMenuItem menuItem = new JMenuItem("Exit");
         menuItem.setAccelerator(KeyStroke.getKeyStroke("ctrl Q"));
         menuItem.addActionListener(actionEvent -> System.exit(0));

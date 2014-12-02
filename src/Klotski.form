@@ -16,6 +16,7 @@
             <constraints/>
             <properties>
               <focusable value="false"/>
+              <icon value="javax/swing/plaf/metal/icons/ocean/close.gif"/>
               <text value="Exit"/>
             </properties>
           </component>
@@ -23,6 +24,7 @@
             <constraints/>
             <properties>
               <focusable value="false"/>
+              <icon value="javax/swing/plaf/metal/icons/ocean/upFolder.gif"/>
               <text value="Back"/>
             </properties>
           </component>
@@ -31,6 +33,7 @@
             <properties>
               <focusable value="false"/>
               <hideActionText value="false"/>
+              <icon value="javax/swing/plaf/metal/icons/ocean/homeFolder.gif"/>
               <text value="Reset"/>
             </properties>
           </component>
