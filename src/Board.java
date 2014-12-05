@@ -138,7 +138,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
 
     private void checkLevelComplete() {
         if (currentLevel.isGoal()) {
-            JOptionPane.showMessageDialog(this, "Level complete!");
+            JOptionPane.showMessageDialog(this, KlotskiForm.langBundle.getString("level.complete"));
             setLock(true);
         }
     }
