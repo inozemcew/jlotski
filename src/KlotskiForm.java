@@ -65,6 +65,7 @@ public class KlotskiForm {
         menuItem.addActionListener(actionEvent -> System.exit(0));
         menu.add(menuItem);
         menuBar.add(menu);
+
         menu = new JMenu(langBundle.getString("levels"));
         menu.setMnemonic('L');
         ButtonGroup group = new ButtonGroup();
@@ -80,6 +81,15 @@ public class KlotskiForm {
             i++;
         }
         menuBar.add(menu);
+
+        menu = new JMenu("Settings");
+        menu.setMnemonic('S');
+        menuItem = new JMenuItem("Language");
+
+        menu.add(menuItem);
+
+        menuBar.add(menu);
+
         return menuBar;
     }
 
@@ -90,7 +100,7 @@ public class KlotskiForm {
         catch (Exception e) {
             System.err.println("No system specific look&fell. Using default.");
         }
-        langBundle = ResourceBundle.getBundle("i18n/i18n",new Locale("en","US"));
+        langBundle = ResourceBundle.getBundle("i18n/i18n",new Locale("ru","RU"));
         frame = new JFrame("Klotski");
         KlotskiForm form = new KlotskiForm();
         frame.setContentPane(form.boardPanel);

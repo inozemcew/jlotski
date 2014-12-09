@@ -175,13 +175,16 @@
       <src refid="klotski.module.sourcepath"/>
       <patternset refid="excluded.from.compilation.klotski"/>
     </javac2>
-    
+
+    <native2ascii src="${module.klotski.basedir}/src/i18n" dest="${klotski.output.dir}/i18n" encoding="UTF-8" includes="/i18n*.properties" />
+
     <copy todir="${klotski.output.dir}">
       <fileset dir="${module.klotski.basedir}/src">
         <patternset refid="compiler.resources"/>
         <type type="file"/>
       </fileset>
     </copy>
+
   </target>
   
   <target name="compile.module.klotski.tests" depends="register.custom.compilers,compile.module.klotski.production" description="compile module klotski; test classes" unless="skip.tests"/>
