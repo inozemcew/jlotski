@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Vector;
+import java.util.function.Predicate;
 
 /**
  * Java version of klotski game
@@ -24,16 +27,17 @@ public class KlotskiForm {
     private static JFrame frame;
     private JMenuBar menuBar;
 
-    static ResourceBundle langBundle;
+    static Languages langBundle;
 
     public KlotskiForm() {
+        KlotskiForm.langBundle = new Languages();
         this.board = new Board();
         this.boardPanel.add(this.board);
-        levelSpinner.setModel(new SpinnerNumberModel(1, 1, board.getLevelsCount() - 1, 1));
-        exitButton.addActionListener(e -> System.exit(0));
-        resetButton.addActionListener(e -> setLevel(board.getCurrentLevelNumber()));
+        this.levelSpinner.setModel(new SpinnerNumberModel(1, 1, board.getLevelsCount() - 1, 1));
+        this.exitButton.addActionListener(e -> System.exit(0));
+        this.resetButton.addActionListener(e -> setLevel(board.getCurrentLevelNumber()));
         this.board.setMoveListener(e -> movesLabel.setText(formatMovesMsg(e.getActionCommand())));
-        backButton.addActionListener(e -> undo() );
+        this.backButton.addActionListener(e -> undo() );
     }
 
     private void undo() {
@@ -59,14 +63,17 @@ public class KlotskiForm {
     private JMenuBar createMenu() {
         menuBar = new JMenuBar();
         JMenu menu = new JMenu(langBundle.getString("game"));
+        menu.setName("game");
         menu.setMnemonic('G');
         JMenuItem menuItem = new JMenuItem(langBundle.getString("exit"));
+        menuItem.setName("exit");
         menuItem.setAccelerator(KeyStroke.getKeyStroke("ctrl Q"));
         menuItem.addActionListener(actionEvent -> System.exit(0));
         menu.add(menuItem);
         menuBar.add(menu);
 
         menu = new JMenu(langBundle.getString("levels"));
+        menu.setName("levels");
         menu.setMnemonic('L');
         ButtonGroup group = new ButtonGroup();
         int i = 0;
@@ -82,15 +89,52 @@ public class KlotskiForm {
         }
         menuBar.add(menu);
 
-        menu = new JMenu("Settings");
+        menu = new JMenu(langBundle.getString("settings"));
+        menu.setName("settings");
         menu.setMnemonic('S');
-        menuItem = new JMenuItem("Language");
-
+        menuItem = new JMenu(langBundle.getString("language"));
+        menuItem.setName("language");
+        for (String s:langBundle.getLanguages()){
+            JMenuItem subItem = new JMenuItem(langBundle.getString(s));
+            subItem.setName(s);
+            subItem.setActionCommand(s);
+            subItem.addActionListener(event -> languageChanged(event.getActionCommand()));
+            menuItem.add(subItem);
+        }
         menu.add(menuItem);
 
         menuBar.add(menu);
 
         return menuBar;
+    }
+
+    private void languageChanged(String lang) {
+        if (langBundle.setLocale(lang)) {
+            for (int menuIndex = 0; menuIndex < menuBar.getMenuCount(); menuIndex++) {
+                JMenu menu = menuBar.getMenu(menuIndex);
+                String name = menu.getName();
+                menu.setText(langBundle.getString(name));
+                for (int i=0; i < menu.getItemCount(); i++) {
+                    JMenuItem item = menu.getItem(i);
+                    name = item.getName();
+                    if (name != null)
+                        item.setText(langBundle.getString(name));
+                    if (item instanceof JMenu) {
+                        JMenu subMenu = (JMenu) item;
+                        for (int j=0; j < subMenu.getItemCount(); j++) {
+                            name = subMenu.getItem(j).getName();
+                            if (name != null)
+                                subMenu.getItem(j).setText(langBundle.getString(name));
+
+                        }
+                    }
+                }
+            }
+            exitButton.setText(langBundle.getString("exit"));
+            backButton.setText(langBundle.getString("back"));
+            resetButton.setText(langBundle.getString("reset"));
+            statusLabel.setText(langBundle.getString("wellcome"));
+        }
     }
 
     public static void main(String[] args) {
@@ -100,7 +144,6 @@ public class KlotskiForm {
         catch (Exception e) {
             System.err.println("No system specific look&fell. Using default.");
         }
-        langBundle = ResourceBundle.getBundle("i18n/i18n",new Locale("ru","RU"));
         frame = new JFrame("Klotski");
         KlotskiForm form = new KlotskiForm();
         frame.setContentPane(form.boardPanel);
@@ -117,4 +160,72 @@ public class KlotskiForm {
         frame.setVisible(true);
     }
 
+    class Languages {
+        private final String[][] locales = {
+                {"en","US","english"},
+                {"fr","FR","french"},
+                {"ru","RU","russian"},
+                {"ua","UA","ukrainian"}
+        };
+        private final String bundlePath = "i18n/i18n";
+        private ResourceBundle currentLangBundle;
+        private Vector<String[]> translations = new Vector<>();
+
+        public Languages() {
+            Locale locale;
+            for(String[] l:locales) {
+                locale = new Locale(l[0],l[1]);
+                try {
+                    ResourceBundle bundle = ResourceBundle.getBundle(bundlePath,locale);
+                    if (bundle.getLocale().getLanguage().equals(locale.getLanguage()))
+                        translations.add(l);
+                    else
+                        System.err.println("No locale found"+l);
+                } catch (MissingResourceException e) {
+                    continue;
+                }
+            }
+            Locale defaultLocale = Locale.getDefault();
+            System.err.println(defaultLocale);
+            if (!setLocale(defaultLocale.getCountry(),defaultLocale.getLanguage()))
+                setLocale(0);
+        }
+
+        public boolean setLocale(String country, String language) {
+            return setLocale(t -> country.equals(t[1]) && language.equals(t[0]));
+        }
+
+        public boolean setLocale(String name) {
+            return setLocale(x -> x[2] == name);
+        }
+
+        public boolean setLocale(Predicate<String[]> predicate){
+            for (int i=0; i<translations.size();i++) {
+                String[] lang = translations.get(i);
+                if (predicate.test(lang)) {
+                    return setLocale(i);
+                }
+            }
+            return false;
+        }
+
+        public boolean setLocale(int index) {
+            if (index >= 0 && index < translations.size()) {
+                String[] t = translations.get(index);
+                Locale locale = new Locale(t[0],t[1]);
+                currentLangBundle = ResourceBundle.getBundle(bundlePath,locale);
+                return true;
+            }
+            return false;
+        }
+
+        public String[] getLanguages() {
+            Vector<String> languages = new Vector<>();
+            return translations.stream().map(x -> x[2]).toArray(String[]::new);
+        }
+
+        public String getString(String key) {
+            return currentLangBundle.getString(key);
+        }
+    }
 }

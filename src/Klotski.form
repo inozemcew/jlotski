@@ -16,16 +16,21 @@
             <constraints/>
             <properties>
               <focusable value="false"/>
+              <horizontalTextPosition value="0"/>
               <icon value="javax/swing/plaf/metal/icons/ocean/close.gif"/>
-              <text value="Exit"/>
+              <opaque value="true"/>
+              <text resource-bundle="i18n" key="exit"/>
+              <verticalTextPosition value="3"/>
             </properties>
           </component>
           <component id="d23e2" class="javax.swing.JButton" binding="backButton">
             <constraints/>
             <properties>
               <focusable value="false"/>
+              <horizontalTextPosition value="0"/>
               <icon value="javax/swing/plaf/metal/icons/ocean/upFolder.gif"/>
-              <text value="Back"/>
+              <text resource-bundle="i18n" key="back"/>
+              <verticalTextPosition value="3"/>
             </properties>
           </component>
           <component id="1a2fa" class="javax.swing.JButton" binding="resetButton" default-binding="true">
@@ -33,8 +38,10 @@
             <properties>
               <focusable value="false"/>
               <hideActionText value="false"/>
+              <horizontalTextPosition value="0"/>
               <icon value="javax/swing/plaf/metal/icons/ocean/homeFolder.gif"/>
-              <text value="Reset"/>
+              <text resource-bundle="i18n" key="reset"/>
+              <verticalTextPosition value="3"/>
             </properties>
           </component>
           <component id="4906b" class="javax.swing.JToolBar$Separator">
@@ -61,7 +68,7 @@
           <component id="31cbd" class="javax.swing.JLabel" binding="statusLabel">
             <constraints border-constraint="West"/>
             <properties>
-              <text value="Welcome to java klotski"/>
+              <text resource-bundle="i18n" key="wellcome"/>
             </properties>
           </component>
           <component id="2beec" class="javax.swing.JLabel" binding="movesLabel">

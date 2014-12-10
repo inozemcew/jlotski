@@ -160,7 +160,6 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         String f = levelsFileName;
             try {
                 doLoadLevels(new FileReader(f));
-                return;
             } catch (FileNotFoundException e) {
                 JOptionPane.showMessageDialog(null, "No levels file found: " + f);
             }
