@@ -1,5 +1,6 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -19,9 +20,10 @@ public class KlotskiForm {
     private JSpinner levelSpinner;
     private JButton resetButton;
     private JPanel statusPanel;
-    private JLabel statusLabel;
+    private JLabel welcomeLabel;
     private JButton backButton;
     private JLabel movesLabel;
+    private JLabel levelNameLabel;
 
     private Board board;
     private static JFrame frame;
@@ -37,7 +39,7 @@ public class KlotskiForm {
         this.exitButton.addActionListener(e -> System.exit(0));
         this.resetButton.addActionListener(e -> setLevel(board.getCurrentLevelNumber()));
         this.board.setMoveListener(e -> movesLabel.setText(formatMovesMsg(e.getActionCommand())));
-        this.backButton.addActionListener(e -> undo() );
+        this.backButton.addActionListener(e -> undo());
     }
 
     private void undo() {
@@ -54,7 +56,9 @@ public class KlotskiForm {
         board.setLevel(index);
         levelSpinner.setValue(index);
         menuBar.getMenu(1).getItem(index-1).setSelected(true);
-        statusLabel.setText(board.currentLevel.getName());
+        welcomeLabel.setVisible(false);
+        levelNameLabel.setVisible(true);
+        levelNameLabel.setText(board.currentLevel.getName());
         movesLabel.setText("");
         frame.pack();
         frame.repaint();
@@ -109,32 +113,35 @@ public class KlotskiForm {
     }
 
     private void languageChanged(String lang) {
-        if (langBundle.setLocale(lang)) {
-            for (int menuIndex = 0; menuIndex < menuBar.getMenuCount(); menuIndex++) {
-                JMenu menu = menuBar.getMenu(menuIndex);
-                String name = menu.getName();
-                menu.setText(langBundle.getString(name));
-                for (int i=0; i < menu.getItemCount(); i++) {
-                    JMenuItem item = menu.getItem(i);
-                    name = item.getName();
-                    if (name != null)
-                        item.setText(langBundle.getString(name));
-                    if (item instanceof JMenu) {
-                        JMenu subMenu = (JMenu) item;
-                        for (int j=0; j < subMenu.getItemCount(); j++) {
-                            name = subMenu.getItem(j).getName();
-                            if (name != null)
-                                subMenu.getItem(j).setText(langBundle.getString(name));
-
-                        }
-                    }
+        class Helper {
+            void traverse(Container container) {
+                for (Component c : container.getComponents()) {
+                    update(c);
                 }
             }
-            exitButton.setText(langBundle.getString("exit"));
-            backButton.setText(langBundle.getString("back"));
-            resetButton.setText(langBundle.getString("reset"));
-            statusLabel.setText(langBundle.getString("wellcome"));
+            void traverseMenu(JMenu menu) {
+                for(MenuElement c : menu.getSubElements())
+                if (c instanceof Component)
+                    update((Component) c);
+            }
+            void update(Component c) {
+                String name = c.getName();
+                if (null != name) {
+                    if (c instanceof AbstractButton)
+                        ((AbstractButton)c).setText(langBundle.getString(name));
+                    else if (c instanceof JLabel)
+                        ((JLabel) c).setText(langBundle.getString(name));
+                }
+                if (c instanceof JMenu) {
+                    traverseMenu((JMenu) c);
+                } else if (c instanceof Container && ((Container) c).getComponentCount()>0)
+                    traverse((Container) c);
+            }
         }
+        if ( !langBundle.setLocale(lang))
+            return;
+        Helper helper = new Helper();
+        helper.traverse(frame);
     }
 
     public static void main(String[] args) {
@@ -180,7 +187,7 @@ public class KlotskiForm {
                     if (bundle.getLocale().getLanguage().equals(locale.getLanguage()))
                         translations.add(l);
                     else
-                        System.err.println("No locale found"+l);
+                        System.err.println("No locale found"+l[2]);
                 } catch (MissingResourceException e) {
                     continue;
                 }
@@ -196,7 +203,7 @@ public class KlotskiForm {
         }
 
         public boolean setLocale(String name) {
-            return setLocale(x -> x[2] == name);
+            return setLocale(x -> name.equals(x[2]) );
         }
 
         public boolean setLocale(Predicate<String[]> predicate){
@@ -220,7 +227,6 @@ public class KlotskiForm {
         }
 
         public String[] getLanguages() {
-            Vector<String> languages = new Vector<>();
             return translations.stream().map(x -> x[2]).toArray(String[]::new);
         }
 
