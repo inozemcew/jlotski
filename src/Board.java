@@ -39,10 +39,9 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     }
 
     public Vector<String> getLevelNames() {
-        Vector<String> names = levels.stream()
+        return levels.stream()
                 .map(Level::getName)
-                .collect(Collectors.toCollection(() -> new Vector<>()));
-        return names;
+                .collect(Collectors.toCollection(Vector::new));
     }
 
     public void setLevel(int index){

@@ -128,7 +128,7 @@ public class KlotskiForm {
                         ((AbstractButton)c).setText(langBundle.getString(name));
                     else if (c instanceof JLabel)
                         ((JLabel) c).setText(langBundle.getString(name));
-                } catch (MissingResourceException e) { }
+                } catch (MissingResourceException ignored) { }
                 if (c instanceof JMenu) {
                     traverseMenu((JMenu) c);
                 } else if (c instanceof Container && ((Container) c).getComponentCount()>0)
@@ -173,7 +173,7 @@ public class KlotskiForm {
         };
         private final String bundlePath = "i18n/i18n";
         private ResourceBundle currentLangBundle;
-        private Vector<String[]> translations = new Vector<>();
+        private final Vector<String[]> translations = new Vector<>();
 
         public Languages() {
             Locale locale;

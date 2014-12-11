@@ -13,11 +13,11 @@ import java.util.Vector;
 public class Level {
     private String name = "";
     private Vector<String> data = new Vector<>();
-    private Vector<Piece> pieces = new Vector<>();
-    private Dimension size = new Dimension(0,0);
+    private final Vector<Piece> pieces = new Vector<>();
+    private final Dimension size = new Dimension(0,0);
     private Piece draggingFigure = null;
 
-    private Stack<MoveRecord> moves = new Stack<>();
+    private final Stack<MoveRecord> moves = new Stack<>();
     private MoveRecord moveRecord = null;
 
     public Level() {

@@ -2,9 +2,9 @@
  * Created by ainozemtsev on 26.11.14.
  */
 public class MoveRecord {
-    int x;
-    int y;
-    Piece piece;
+    final int x;
+    final int y;
+    final Piece piece;
 
     public MoveRecord(int x, int y, Piece piece) {
         this.x = x;

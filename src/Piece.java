@@ -183,7 +183,7 @@ abstract class Piece {
 
     boolean move(int dx, int dy, Vector<Piece> pieces) {
         class Helper {
-            int c = Cell.CELLSIZE;
+            final int c = Cell.CELLSIZE;
             int least(int dz, int z){
                 if (z%c == 0) {
                     if (dz > 0) return min(c, dz);
