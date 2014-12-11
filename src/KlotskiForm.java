@@ -17,7 +17,6 @@ import java.util.function.Predicate;
 public class KlotskiForm {
     private JPanel boardPanel;
     private JButton exitButton;
-    private JSpinner levelSpinner;
     private JButton resetButton;
     private JPanel statusPanel;
     private JLabel welcomeLabel;
@@ -35,7 +34,6 @@ public class KlotskiForm {
         KlotskiForm.langBundle = new Languages();
         this.board = new Board();
         this.boardPanel.add(this.board);
-        this.levelSpinner.setModel(new SpinnerNumberModel(1, 1, board.getLevelsCount() - 1, 1));
         this.exitButton.addActionListener(e -> System.exit(0));
         this.resetButton.addActionListener(e -> setLevel(board.getCurrentLevelNumber()));
         this.board.setMoveListener(e -> movesLabel.setText(formatMovesMsg(e.getActionCommand())));
@@ -54,7 +52,6 @@ public class KlotskiForm {
 
     private void setLevel(int index) {
         board.setLevel(index);
-        levelSpinner.setValue(index);
         menuBar.getMenu(1).getItem(index-1).setSelected(true);
         welcomeLabel.setVisible(false);
         levelNameLabel.setVisible(true);
@@ -126,12 +123,12 @@ public class KlotskiForm {
             }
             void update(Component c) {
                 String name = c.getName();
-                if (null != name) {
+                if (null != name) try {
                     if (c instanceof AbstractButton)
                         ((AbstractButton)c).setText(langBundle.getString(name));
                     else if (c instanceof JLabel)
                         ((JLabel) c).setText(langBundle.getString(name));
-                }
+                } catch (MissingResourceException e) { }
                 if (c instanceof JMenu) {
                     traverseMenu((JMenu) c);
                 } else if (c instanceof Container && ((Container) c).getComponentCount()>0)

@@ -51,10 +51,6 @@
             <constraints/>
             <properties/>
           </component>
-          <component id="cb6a5" class="javax.swing.JSpinner" binding="levelSpinner">
-            <constraints/>
-            <properties/>
-          </component>
         </children>
       </toolbar>
       <hspacer id="3d68a">
