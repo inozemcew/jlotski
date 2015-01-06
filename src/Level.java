@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.function.Consumer;
 
 /**
  * Representation of a game level
@@ -26,6 +27,11 @@ public class Level {
     public Level(String name, Vector<String> data) {
         this.name = name;
         this.data = data;
+    }
+
+    public void forAllPieces(Consumer<Piece> pieceConsumer) {
+        for (Piece p:this.pieces)
+            pieceConsumer.accept(p);
     }
 
     public final String getName() {
@@ -109,8 +115,8 @@ public class Level {
         return newLevel;
     }
 
-    public Dimension getSize() {
-        return new Dimension(size);
+    public Dimension getLevelSize() {
+        return new Dimension(size.width * Cell.CELLSIZE, size.height * Cell.CELLSIZE);
     }
 
     public void setSize(Dimension size) {
@@ -139,7 +145,7 @@ public class Level {
             this.data.clear();
             return false;
         }
-        size.setSize(x*Cell.CELLSIZE,y*Cell.CELLSIZE);
+        size.setSize(x,y);
         createPieces();
         return true;
     }

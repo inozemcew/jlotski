@@ -1,9 +1,7 @@
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.util.Vector;
 import java.util.stream.Collectors;
@@ -26,6 +24,13 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     public Board() {
         addMouseListener(this);
         addMouseMotionListener(this);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                componentResize(e);
+            }
+        });
         this.setPreferredSize(new Dimension(300,400));
         loadLevels();
     }
@@ -48,7 +53,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         if (index >= 0 && index <= getLevelsCount()) {
             this.currentLevel = levels.elementAt(index).getCopy();
             this.currentLevelNumber = index;
-            Dimension p = this.currentLevel.getSize();
+            Dimension p = this.currentLevel.getLevelSize();
             setMinimumSize(p);
             setPreferredSize(p);
             setLock(index<1);
@@ -133,6 +138,16 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
                             ActionEvent.ACTION_LAST+1,
                             Integer.toString(currentLevel.getMovesCount() ))
             );
+    }
+
+    private void componentResize(ComponentEvent event){
+        Dimension d = getSize();
+        Dimension l = currentLevel.getLevelSize();
+        int newCellSize = Integer.min(Cell.CELLSIZE * d.width / l.width, Cell.CELLSIZE * d.height / l.height);
+        if (newCellSize > 3 && newCellSize != Cell.CELLSIZE) {
+            currentLevel.forAllPieces(p -> p.changeCellSize(newCellSize));
+            Cell.CELLSIZE = newCellSize;
+        }
     }
 
     private void checkLevelComplete() {

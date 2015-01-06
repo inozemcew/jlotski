@@ -69,6 +69,12 @@ abstract class Piece {
         this.y += y*Cell.CELLSIZE;
     }
 
+    public void changeCellSize(int newCellSize) {
+        int x = this.x * newCellSize / Cell.CELLSIZE;
+        int y = this.y * newCellSize / Cell.CELLSIZE;
+        setXY(x, y);
+    }
+
     private void findCorners(Cell cell){
         //noinspection Convert2streamapi
         for(Cell c:cells) {
@@ -146,7 +152,7 @@ abstract class Piece {
     }
 
     boolean canMove(int dx, int dy, Vector<Piece> pieces) {
-        if (!isPieceInside(dx, dy, new Rectangle(level.getSize())))
+        if (!isPieceInside(dx, dy, new Rectangle(level.getLevelSize())))
             return false;
         for(Piece piece:pieces){
             if (allowOverlap(piece)) continue;
