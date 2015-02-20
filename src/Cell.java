@@ -1,3 +1,7 @@
+import paint.AbstractCellPainter;
+import paint.CellDrawPainter;
+import paint.Corners;
+
 import java.awt.*;
 
 /**
@@ -14,7 +18,7 @@ abstract class Cell {
     //protected Set<Dirs> neighbours = new HashSet<>();
     final protected Corners corners = new Corners();
     protected Color color = Color.green;
-    private  final AbstractCellPainter painter;
+    private final AbstractCellPainter painter;
 
     public Cell(Piece parent, int dx, int dy) {
         this.parent = parent;
@@ -57,15 +61,9 @@ abstract class Cell {
         doPaint(x, y, w, h, g, this.color);
     }
     protected void doPaint(int x, int y, int w, int h, Graphics g, Color color){
+        painter.setContext(g, x, y, w, h);
         g.setColor(color);
-        painter.setContext(g,x,y,w,h);
-        painter.drawBG();
-        g.setColor(Color.black);
-        painter.drawNW(corners.nw);
-        painter.drawNE(corners.ne);
-        painter.drawSW(corners.sw);
-        painter.drawSE(corners.se);
-        painter.drawFG();
+        painter.drawAll(corners);
     }
 
     public boolean isInsideCell(int x, int y) {

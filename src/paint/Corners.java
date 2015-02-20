@@ -1,3 +1,5 @@
+package paint;
+
 /**
  * <p>Helper class for correct drawing of cell corners
  * has four fields correspondents to each corner of piece cell Northwest, Northeast, etc..</p>
@@ -8,39 +10,12 @@
  * @author <p> Created by ainozemtsev on 19.11.14.</p>
  */
 public class Corners {
-    enum Type {
-        None, Horizontal, Vertical, Both, Inner;
-
-        Type setNS(boolean d){
-            if (this == Type.Both)  return Type.Vertical;
-            if (this == Type.Horizontal) {
-                if (d) return
-                        Type.None;
-                else
-                    return Type.Inner;
-            }
-            return this;
-        }
-
-        Type setEW(boolean d){
-            if (this == Type.Both)  return Type.Horizontal;
-            if (this == Type.Vertical) {
-                if (d) return Type.None; else return Type.Inner;
-            }
-            return this;
-        }
-
-        Type setC(){
-            if (this == Inner) return None;
-            return this;
-        }
-    }
 
     /** Corner types for correspondent quadrant */
-    Type nw = Type.Both;
-    Type ne = Type.Both;
-    Type sw = Type.Both;
-    Type se = Type.Both;
+    CornerType nw = CornerType.Both;
+    CornerType ne = CornerType.Both;
+    CornerType sw = CornerType.Both;
+    CornerType se = CornerType.Both;
 
     // Flags for correct detection of inner corner
     private boolean nwf = false, nef = false, swf = false, sef = false;

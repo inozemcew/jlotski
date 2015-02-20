@@ -1,9 +1,11 @@
+package paint;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 /**
- * <p>CellImgPainter a descendant of AbstractCellPainter paints cell of piece using an external image.</p>
+ * <p>paint.CellImgPainter a descendant of paint.AbstractCellPainter paints cell of piece using an external image.</p>
  * <p>It uses an image divided by 6 parts each direction as such</p>
  * <p style="font:mono">
  *     122221<br>
@@ -40,7 +42,7 @@ public class CellImgPainter extends AbstractCellPainter {
         }
     }
 
-    private void drawCorner(int x, int y, Corners.Type type, int [][] array) {
+    private void drawCorner(int x, int y, CornerType type, int [][] array) {
         int px=0;
         int py=0;
         switch (type) {
@@ -64,25 +66,25 @@ public class CellImgPainter extends AbstractCellPainter {
     }
 
     @Override
-    protected void drawNW(Corners.Type type) {
+    protected void drawNW(CornerType type) {
         int array[][] = {{0, 0}, {2, 0}, {0, 2}, {4, 4}, {3, 3}};
         drawCorner(x, y, type, array);
     }
 
     @Override
-    protected void drawNE(Corners.Type type) {
+    protected void drawNE(CornerType type) {
         int array[][] = {{5, 0}, {1, 0}, {5, 4}, {1, 2}, {2, 3}};
         drawCorner(x + w, y, type, array);
     }
 
     @Override
-    protected void drawSW(Corners.Type type) {
+    protected void drawSW(CornerType type) {
         int array[][] = {{0, 5}, {2, 5}, {0, 1}, {1, 4}, {3, 2}};
         drawCorner(x, y + h, type, array);
     }
 
     @Override
-    protected void drawSE(Corners.Type type) {
+    protected void drawSE(CornerType type) {
         int array[][] = {{5, 5}, {1, 5}, {5, 1}, {1, 1}, {2, 2}};
         drawCorner(x + w, y + h, type, array);
     }

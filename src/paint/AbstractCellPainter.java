@@ -1,3 +1,5 @@
+package paint;
+
 import java.awt.*;
 
 /**
@@ -20,9 +22,19 @@ public abstract class AbstractCellPainter {
 
     abstract protected void drawFG();
     abstract protected void drawBG();
-    abstract protected void drawNW(Corners.Type type);
-    abstract protected void drawNE(Corners.Type type);
-    abstract protected void drawSW(Corners.Type type);
-    abstract protected void drawSE(Corners.Type type);
+    abstract protected void drawNW(CornerType type);
+    abstract protected void drawNE(CornerType type);
+    abstract protected void drawSW(CornerType type);
+    abstract protected void drawSE(CornerType type);
+
+    public void drawAll(Corners corners) {
+        drawBG();
+        g.setColor(Color.black);
+        drawNW(corners.nw);
+        drawNE(corners.ne);
+        drawSW(corners.sw);
+        drawSE(corners.se);
+        drawFG();
+    }
 
 }

@@ -1,6 +1,8 @@
+package paint;
+
 import java.awt.*;
 
-public class CellDrawPainter extends  AbstractCellPainter {
+public class CellDrawPainter extends AbstractCellPainter {
     private int b;
     private Color bgColor;
     private Color frameColor = Color.green;
@@ -21,7 +23,7 @@ public class CellDrawPainter extends  AbstractCellPainter {
         g.fillRect(x, y, xw-x, yh-y);
     }
 
-    protected void drawNW(Corners.Type type) {
+    protected void drawNW(CornerType type) {
         switch (type) {
             case Horizontal:
                 H(x, x + w, y, y + b, 0, 0, false);
@@ -41,7 +43,7 @@ public class CellDrawPainter extends  AbstractCellPainter {
         }
     }
 
-    protected void drawNE(Corners.Type type) {
+    protected void drawNE(CornerType type) {
         switch (type) {
             case Horizontal:
                 H(xw-w, xw, y, y+b, 0, 0,false);
@@ -61,7 +63,7 @@ public class CellDrawPainter extends  AbstractCellPainter {
         }
     }
 
-    protected void drawSW(Corners.Type type) {
+    protected void drawSW(CornerType type) {
         switch (type) {
             case Horizontal:
                 H(x, x + w, yh - b, yh, 0, 0);
@@ -81,7 +83,7 @@ public class CellDrawPainter extends  AbstractCellPainter {
         }
     }
 
-    protected void drawSE(Corners.Type type) {
+    protected void drawSE(CornerType type) {
         switch (type) {
             case Horizontal:
                 H(xw-w, xw, yh - b, yh, 0, 0);

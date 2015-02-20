@@ -20,7 +20,7 @@
               <icon value="javax/swing/plaf/metal/icons/ocean/close.gif"/>
               <name value="exit"/>
               <opaque value="true"/>
-              <text resource-bundle="i18n" key="exit"/>
+              <text resource-bundle="i18n/i18n" key="exit"/>
               <verticalTextPosition value="3"/>
             </properties>
           </component>
@@ -31,7 +31,7 @@
               <horizontalTextPosition value="0"/>
               <icon value="javax/swing/plaf/metal/icons/ocean/upFolder.gif"/>
               <name value="back"/>
-              <text resource-bundle="i18n" key="back"/>
+              <text resource-bundle="i18n/i18n" key="back"/>
               <verticalTextPosition value="3"/>
             </properties>
           </component>
@@ -43,7 +43,7 @@
               <horizontalTextPosition value="0"/>
               <icon value="javax/swing/plaf/metal/icons/ocean/homeFolder.gif"/>
               <name value="reset"/>
-              <text resource-bundle="i18n" key="reset"/>
+              <text resource-bundle="i18n/i18n" key="reset"/>
               <verticalTextPosition value="3"/>
             </properties>
           </component>
@@ -70,7 +70,7 @@
               <horizontalAlignment value="2"/>
               <horizontalTextPosition value="2"/>
               <name value="welcome"/>
-              <text resource-bundle="i18n" key="welcome"/>
+              <text resource-bundle="i18n/i18n" key="welcome"/>
             </properties>
           </component>
           <component id="2beec" class="javax.swing.JLabel" binding="movesLabel">

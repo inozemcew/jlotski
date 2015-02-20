@@ -1,3 +1,6 @@
+import paint.AbstractCellPainter;
+import paint.CellImgPainter;
+
 import java.awt.*;
 
 /**
@@ -6,6 +9,7 @@ import java.awt.*;
  */
 
 class FigureCell extends Cell{
+    @Override
     protected AbstractCellPainter getPainter(){
         return new CellImgPainter("/img/green1.png");
     }
@@ -21,6 +25,7 @@ class MainFigureCell extends FigureCell {
         color = Color.red;
     }
 
+    @Override
     protected AbstractCellPainter getPainter(){
         return new CellImgPainter("/img/red1.png");
     }
