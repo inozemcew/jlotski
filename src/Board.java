@@ -147,6 +147,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         if (newCellSize > 3 && newCellSize != Cell.CELLSIZE) {
             currentLevel.forAllPieces(p -> p.changeCellSize(newCellSize));
             Cell.CELLSIZE = newCellSize;
+            repaint();
         }
     }
 
