@@ -9,9 +9,11 @@ import java.awt.*;
  */
 
 class FigureCell extends Cell{
+    static AbstractCellPainter painter = new CellImgPainter("/img/green1.png");
+
     @Override
     protected AbstractCellPainter getPainter(){
-        return new CellImgPainter("/img/green1.png");
+        return painter;
     }
 
     public FigureCell(Piece parent, int dx, int dy) {
@@ -20,6 +22,8 @@ class FigureCell extends Cell{
 }
 
 class MainFigureCell extends FigureCell {
+    static AbstractCellPainter painter = new CellImgPainter("/img/red1.png");
+
     public MainFigureCell(Piece parent, int dx, int dy) {
         super(parent, dx, dy);
         color = Color.red;
@@ -27,7 +31,7 @@ class MainFigureCell extends FigureCell {
 
     @Override
     protected AbstractCellPainter getPainter(){
-        return new CellImgPainter("/img/red1.png");
+        return painter;
     }
 
     @Override
@@ -40,9 +44,11 @@ class MainFigureCell extends FigureCell {
 
 
 class WallCell extends Cell{
+    static AbstractCellPainter painter = new CellImgPainter("/img/blue1.png");
+
     @Override
     protected AbstractCellPainter getPainter() {
-        return new CellImgPainter("/img/blue1.png");
+        return painter;
     }
 
     public WallCell(Piece parent, int dx, int dy) {

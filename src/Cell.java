@@ -1,6 +1,4 @@
-import paint.AbstractCellPainter;
-import paint.CellDrawPainter;
-import paint.Corners;
+import paint.*;
 
 import java.awt.*;
 
@@ -18,13 +16,13 @@ abstract class Cell {
     //protected Set<Dirs> neighbours = new HashSet<>();
     final protected Corners corners = new Corners();
     protected Color color = Color.green;
-    private final AbstractCellPainter painter;
+    private final CellPainterCollection painter;
 
     public Cell(Piece parent, int dx, int dy) {
         this.parent = parent;
         this.x = dx;
         this.y = dy;
-        this.painter = getPainter();
+        this.painter = getPainterCollection();
     }
 
     public int getX() {
@@ -48,8 +46,15 @@ abstract class Cell {
         this.y += dy;
     }
 
-    protected AbstractCellPainter getPainter(){
-        return new CellDrawPainter();
+    private AbstractCellPainter getPainter(){
+        return painter.getCurrentPainter();
+    }
+
+    protected CellPainterCollection getPainterCollection() {
+        CellPainterCollection collection = new CellPainterCollection();
+        collection.addPainter(PainterTheme.Draw,new CellDrawPainter());
+        //collection.addPainter(PainterTheme.Image, new CellImgPainter());
+        return collection;
     }
 
     public void paint(int x, int y, Graphics g){
@@ -61,9 +66,9 @@ abstract class Cell {
         doPaint(x, y, w, h, g, this.color);
     }
     protected void doPaint(int x, int y, int w, int h, Graphics g, Color color){
-        painter.setContext(g, x, y, w, h);
+        getPainter().setContext(g, x, y, w, h);
         g.setColor(color);
-        painter.drawAll(corners);
+        getPainter().drawAll(corners);
     }
 
     public boolean isInsideCell(int x, int y) {

@@ -7,21 +7,30 @@ import java.util.HashMap;
  * Created by AInozemtsev on 20.02.15.
  */
 public class CellPainterCollection {
-    private static HashMap<String,AbstractCellPainter> painters = new HashMap<>();
+    private HashMap<PainterTheme, AbstractCellPainter> painters = new HashMap<>();
+    private AbstractCellPainter currentPainter = null;
 
-    public void addPainter(String name,AbstractCellPainter painter) {
-        painters.putIfAbsent(name, painter);
+    public void addPainter(PainterTheme theme, AbstractCellPainter painter) {
+        painters.putIfAbsent(theme, painter);
+        if (currentPainter == null)
+            currentPainter = painter;
     }
+
     public int getPaintersCount() {
         return painters.size();
     }
 
-    public static String[] getPaintersNames() {
-        return painters.keySet().toArray(new String[0]);
+    public PainterTheme[] getPaintersNames() {
+        return painters.keySet().toArray(new PainterTheme[0]);
     }
 
-    public static AbstractCellPainter getPainter(String name) {
-        return painters.get(name);
+    public void selectPainter(PainterTheme theme) {
+        if (painters.containsKey(theme))
+            currentPainter = painters.get(theme);
+    }
+
+    public AbstractCellPainter getCurrentPainter() {
+        return currentPainter;
     }
 
 }
