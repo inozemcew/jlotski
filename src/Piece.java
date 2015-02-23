@@ -56,8 +56,8 @@ abstract class Piece {
     }
 
     private void normalize() {
-        int x = 99999;
-        int y = 99999;
+        int x = Integer.MAX_VALUE;
+        int y = Integer.MAX_VALUE;
         for (Cell cell:cells) {
             if (cell.getX()<x) x = cell.getX();
             if (cell.getY()<y) y = cell.getY();

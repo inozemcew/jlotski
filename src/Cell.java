@@ -16,13 +16,13 @@ abstract class Cell {
     //protected Set<Dirs> neighbours = new HashSet<>();
     final protected Corners corners = new Corners();
     protected Color color = Color.green;
-    private final CellPainterCollection painter;
+    private final CellPainterCollection painters;
 
     public Cell(Piece parent, int dx, int dy) {
         this.parent = parent;
         this.x = dx;
         this.y = dy;
-        this.painter = getPainterCollection();
+        this.painters = getPainterCollection();
     }
 
     public int getX() {
@@ -47,7 +47,7 @@ abstract class Cell {
     }
 
     private AbstractCellPainter getPainter(){
-        return painter.getCurrentPainter();
+        return painters.getCurrentPainter();
     }
 
     protected CellPainterCollection getPainterCollection() {
@@ -65,6 +65,7 @@ abstract class Cell {
     protected void doPaint(int x, int y, int w, int h, Graphics g){
         doPaint(x, y, w, h, g, this.color);
     }
+
     protected void doPaint(int x, int y, int w, int h, Graphics g, Color color){
         getPainter().setContext(g, x, y, w, h);
         g.setColor(color);

@@ -1,5 +1,6 @@
-import paint.AbstractCellPainter;
 import paint.CellImgPainter;
+import paint.CellPainterCollection;
+import paint.PainterTheme;
 
 import java.awt.*;
 
@@ -9,20 +10,26 @@ import java.awt.*;
  */
 
 class FigureCell extends Cell{
-    static AbstractCellPainter painter = new CellImgPainter("/img/green1.png");
-
-    @Override
-    protected AbstractCellPainter getPainter(){
-        return painter;
+    static CellPainterCollection painterCollection = new CellPainterCollection();
+    static {
+        painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/green1.png"));
     }
 
     public FigureCell(Piece parent, int dx, int dy) {
         super(parent, dx, dy);
     }
+
+    @Override
+    protected CellPainterCollection getPainterCollection() {
+        return painterCollection;
+    }
 }
 
 class MainFigureCell extends FigureCell {
-    static AbstractCellPainter painter = new CellImgPainter("/img/red1.png");
+    static CellPainterCollection painterCollection = new CellPainterCollection();
+    static {
+        painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/red1.png"));
+    }
 
     public MainFigureCell(Piece parent, int dx, int dy) {
         super(parent, dx, dy);
@@ -30,8 +37,8 @@ class MainFigureCell extends FigureCell {
     }
 
     @Override
-    protected AbstractCellPainter getPainter(){
-        return painter;
+    protected CellPainterCollection getPainterCollection(){
+        return painterCollection;
     }
 
     @Override
@@ -44,11 +51,14 @@ class MainFigureCell extends FigureCell {
 
 
 class WallCell extends Cell{
-    static AbstractCellPainter painter = new CellImgPainter("/img/blue1.png");
+    static CellPainterCollection painterCollection = new CellPainterCollection();
+    static {
+        painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/blue1.png"));
+    }
 
     @Override
-    protected AbstractCellPainter getPainter() {
-        return painter;
+    protected CellPainterCollection getPainterCollection() {
+        return painterCollection;
     }
 
     public WallCell(Piece parent, int dx, int dy) {
