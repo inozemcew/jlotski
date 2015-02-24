@@ -1,4 +1,6 @@
-import paint.*;
+import paint.CellDrawPainter;
+import paint.CellPainter;
+import paint.Corners;
 
 import java.awt.*;
 
@@ -10,19 +12,19 @@ import java.awt.*;
 
 
 abstract class Cell {
+    private static CellPainter cellPainter = new CellDrawPainter();
     public static int CELLSIZE = 48;
+
     private int x,y; //block coordinates
     private final Piece parent;
-    //protected Set<Dirs> neighbours = new HashSet<>();
     final protected Corners corners = new Corners();
-    protected Color color = Color.green;
-    private final CellPainterCollection painters;
+    //protected Color color = Color.green;
+
 
     public Cell(Piece parent, int dx, int dy) {
         this.parent = parent;
         this.x = dx;
         this.y = dy;
-        this.painters = getPainterCollection();
     }
 
     public int getX() {
@@ -46,15 +48,8 @@ abstract class Cell {
         this.y += dy;
     }
 
-    private AbstractCellPainter getPainter(){
-        return painters.getCurrentPainter();
-    }
-
-    protected CellPainterCollection getPainterCollection() {
-        CellPainterCollection collection = new CellPainterCollection();
-        collection.addPainter(PainterTheme.Draw,new CellDrawPainter());
-        //collection.addPainter(PainterTheme.Image, new CellImgPainter());
-        return collection;
+    protected CellPainter getCellPainter(){
+        return Cell.cellPainter;
     }
 
     public void paint(int x, int y, Graphics g){
@@ -62,14 +57,14 @@ abstract class Cell {
         doPaint(p.x, p.y, CELLSIZE, CELLSIZE, g);
     }
 
-    protected void doPaint(int x, int y, int w, int h, Graphics g){
+    /*protected void doPaint(int x, int y, int w, int h, Graphics g){
         doPaint(x, y, w, h, g, this.color);
-    }
+    }*/
 
-    protected void doPaint(int x, int y, int w, int h, Graphics g, Color color){
-        getPainter().setContext(g, x, y, w, h);
-        g.setColor(color);
-        getPainter().drawAll(corners);
+    protected void doPaint(int x, int y, int w, int h, Graphics g/*, Color color*/){
+        getCellPainter().setContext(g, x, y, w, h);
+        //g.setColor(color);
+        getCellPainter().drawAll(corners);
     }
 
     public boolean isInsideCell(int x, int y) {

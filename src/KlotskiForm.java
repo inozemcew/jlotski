@@ -1,3 +1,5 @@
+import paint.PainterTheme;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -104,9 +106,24 @@ public class KlotskiForm {
         }
         menu.add(menuItem);
 
+        menuItem = new JMenu(langBundle.getString("theme"));
+        menuItem.setName("theme");
+        for (PainterTheme t: PainterTheme.values()) {
+            JMenuItem subItem = new JMenuItem(t.getThemeName());
+            subItem.setActionCommand(t.name());
+            subItem.addActionListener(event -> themeChanged(event.getActionCommand()));
+            menuItem.add(subItem);
+        }
+        menu.add(menuItem);
+
         menuBar.add(menu);
 
         return menuBar;
+    }
+
+    private void themeChanged(String name){
+        PainterTheme.forEachPainterCollections(item -> item.selectPainter(PainterTheme.valueOf(name)));
+        board.repaint();
     }
 
     private void languageChanged(String lang) {

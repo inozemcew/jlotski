@@ -3,15 +3,19 @@ package paint;
 import java.awt.*;
 
 public class CellDrawPainter extends AbstractCellPainter {
-    private int b;
-    private Color bgColor;
+    private int b=2;
+    private Color bgColor = Color.green;
     private Color frameColor = Color.green;
 
     public CellDrawPainter() {
-        this(2);
+        super();
     }
 
-    public CellDrawPainter(int b) {
+    public CellDrawPainter(Color c){
+        this(c,2);
+    }
+    public CellDrawPainter(Color c, int b) {
+        this.bgColor = c;
         this.b = b;
     }
 
@@ -20,6 +24,7 @@ public class CellDrawPainter extends AbstractCellPainter {
     }
 
     protected void drawBG(){
+        g.setColor(bgColor);
         g.fillRect(x, y, xw-x, yh-y);
     }
 

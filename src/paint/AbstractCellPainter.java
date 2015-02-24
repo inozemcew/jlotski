@@ -6,10 +6,11 @@ import java.awt.*;
  * Created by ainozemtsev on 20.11.14.
  */
 
-public abstract class AbstractCellPainter {
+public abstract class AbstractCellPainter implements CellPainter {
     protected Graphics g;
     protected int x, y, w, h, xw, yh;
 
+    @Override
     public void setContext(Graphics g, int x, int y, int w, int h) {
         this.g = g;
         this.x = x;
@@ -27,6 +28,7 @@ public abstract class AbstractCellPainter {
     abstract protected void drawSW(CornerType type);
     abstract protected void drawSE(CornerType type);
 
+    @Override
     public void drawAll(Corners corners) {
         drawBG();
         g.setColor(Color.black);

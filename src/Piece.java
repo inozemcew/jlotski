@@ -16,7 +16,7 @@ abstract class Piece {
 
     public Piece() {
         this.level = null;
-        cells = new Vector<>();
+        this.cells = new Vector<>();
     }
 
     public void setXY(int x, int y) {
