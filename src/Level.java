@@ -57,9 +57,11 @@ public class Level {
         return draggingFigure.getDragPoint();
     }
 
-    public boolean snap(int dx, int dy){
-        if (draggingFigure == null || draggingFigure.isAligned())
+    public boolean doSnap(int dx, int dy){
+        if (draggingFigure == null || draggingFigure.isAligned()) {
+            this.endDrag();
             return true;
+        }
         Point point = draggingFigure.snapDirection();
         int sx = dx > 0? 1: dx < 0 ? -1 : point.x;
         if (draggingFigure.isXAligned())

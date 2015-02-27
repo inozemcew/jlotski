@@ -109,8 +109,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         int dy = e.getY() - oldDragPos.y;
         dx = dx == 0 ? oldDirection.x : dx;
         dy = dy == 0 ? oldDirection.y : dy;
-        if (currentLevel.snap(dx,dy)) {
-            currentLevel.endDrag();
+        if (currentLevel.doSnap(dx, dy)) {
             moveListenerNotify();
             checkLevelComplete();
             oldDragPos = e.getPoint();
@@ -123,8 +122,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
 
     @Override // onTimer method
     public void actionPerformed(ActionEvent actionEvent) {
-        if (currentLevel.snap(oldDragPos.x,oldDragPos.y)) {
-            currentLevel.endDrag();
+        if (currentLevel.doSnap(oldDragPos.x, oldDragPos.y)) {
             moveListenerNotify();
             checkLevelComplete();
             timer.stop();

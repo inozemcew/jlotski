@@ -31,13 +31,15 @@ abstract class Piece {
         this.level = level;
     }
 
+    abstract protected Cell newCell(int x, int y);
+
     public boolean loadCells(final Vector<String> data, char c){
         int x,y = 0;
         StringBuffer cc = new StringBuffer().append(c);
         for(String s:data){
             if (s.contains(cc)) {
                 for(x=0; x<s.length();x++){
-                    if (s.charAt(x) == c) this.addCell(x, y);
+                    if (s.charAt(x) == c) this.cells.add(newCell(x, y));
                 }
             }
             y++;
@@ -46,12 +48,6 @@ abstract class Piece {
         this.normalize();
         this.cells.forEach(this::findCorners);
         return true;
-    }
-
-    abstract protected Cell newCell(int x, int y);
-
-    void addCell(int x, int y){
-        this.cells.add(newCell(x, y));
     }
 
     private void normalize() {
@@ -88,7 +84,6 @@ abstract class Piece {
                             case 0  : cell.corners.setS();  break;
                             case 1  : cell.corners.setSE(); break;
                         } break;
-
                 }
             }
         }
@@ -173,6 +168,7 @@ abstract class Piece {
     }
 
     boolean move(int dx, int dy, Vector<Piece> pieces) {
+
         class Helper {
             final int c = Cell.CELLSIZE;
             int least(int dz, int z){
@@ -186,9 +182,11 @@ abstract class Piece {
                 }
             }
         }
+
         Helper h=new Helper();
         boolean moved;
         do {
+            //System.err.println(x + ", " + y + ", " + dx + ", " + dy);
             moved = false;
             int d = h.least(dx, this.x);
             if ((d != 0) && canMove(d, 0, pieces)) {
