@@ -15,15 +15,16 @@ public class MoveRecord {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
 
         MoveRecord that = (MoveRecord) o;
 
-        if (x != that.x) return false;
+        return (this.x == that.x) && (this.y == that.y) && (piece == that.piece);
+        /*if (x != that.x) return false;
         if (y != that.y) return false;
         if (piece != that.piece) return false;
 
-        return true;
+        return true;*/
     }
 
     @Override

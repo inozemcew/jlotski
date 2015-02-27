@@ -12,13 +12,12 @@ import java.awt.*;
 
 
 abstract class Cell {
-    private static CellPainter cellPainter = new CellDrawPainter();
+    private static final CellPainter cellPainter = new CellDrawPainter();
     public static int CELLSIZE = 48;
 
-    private int x,y; //block coordinates
+    private int x,y;            //block coordinates
     private final Piece parent;
     final protected Corners corners = new Corners();
-    //protected Color color = Color.green;
 
 
     public Cell(Piece parent, int dx, int dy) {
@@ -57,13 +56,8 @@ abstract class Cell {
         doPaint(p.x, p.y, CELLSIZE, CELLSIZE, g);
     }
 
-    /*protected void doPaint(int x, int y, int w, int h, Graphics g){
-        doPaint(x, y, w, h, g, this.color);
-    }*/
-
-    protected void doPaint(int x, int y, int w, int h, Graphics g/*, Color color*/){
+    protected void doPaint(int x, int y, int w, int h, Graphics g){
         getCellPainter().setContext(g, x, y, w, h);
-        //g.setColor(color);
         getCellPainter().drawAll(corners);
     }
 
@@ -75,7 +69,7 @@ abstract class Cell {
     }
 
     public boolean isCellInside(int offsetX, int offsetY, Rectangle rectangle) {
-        return rectangle.contains(getAbsCoord(offsetX,offsetY)) &&
+        return rectangle.contains(getAbsCoord(offsetX, offsetY)) &&
                 rectangle.contains(getAbsCoord(offsetX + CELLSIZE - 1, offsetY + CELLSIZE - 1));
     }
 

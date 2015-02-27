@@ -30,8 +30,7 @@ public class Level {
     }
 
     public void forAllPieces(Consumer<Piece> pieceConsumer) {
-        for (Piece p:this.pieces)
-            pieceConsumer.accept(p);
+        this.pieces.forEach(pieceConsumer::accept);
     }
 
     public final String getName() {
@@ -46,7 +45,7 @@ public class Level {
         draggingFigure = f.orElse(null);
         if (draggingFigure != null) {
             draggingFigure.setDragPoint(x, y);
-            moveRecord = draggingFigure.getMoveRecord();
+            moveRecord = draggingFigure.newMoveRecord();
         }
         return f.isPresent();
     }
@@ -74,9 +73,9 @@ public class Level {
 
     public boolean isGoal() {
         Piece main = null,target = null;
-        for (Piece p:pieces) {
+        for (Piece p:this.pieces) {
             if (p instanceof MainFigure) main = p;
-            if (p instanceof Target) target =p;
+            if (p instanceof Target) target = p;
             if ((main != null)&& (target != null))
                 return main.isCoincided(target, 0, 0);
         }
@@ -85,7 +84,7 @@ public class Level {
 
     public void endDrag() {
         if (draggingFigure == null) return;
-        MoveRecord move = draggingFigure.getMoveRecord();
+        MoveRecord move = draggingFigure.newMoveRecord();
         if (!moveRecord.equals(move)) {
             if (!moves.empty() && moves.peek().equals(move))
                 moves.pop();
@@ -151,9 +150,7 @@ public class Level {
     }
 
     public void paint(Graphics g) {
-        for(Piece f: pieces) {
-            f.paint(g);
-        }
+        this.pieces.forEach(p -> p.paint(g));
     }
 
     interface PieceCreator<P extends Piece>{

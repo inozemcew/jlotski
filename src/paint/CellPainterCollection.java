@@ -8,7 +8,7 @@ import java.util.HashMap;
  * Created by AInozemtsev on 20.02.15.
  */
 public class CellPainterCollection implements CellPainter {
-    private HashMap<PainterTheme, AbstractCellPainter> painters = new HashMap<>();
+    private final HashMap<PainterTheme, AbstractCellPainter> painters = new HashMap<>();
     private AbstractCellPainter currentPainter = null;
 
     public void addPainter(PainterTheme theme, AbstractCellPainter painter) {

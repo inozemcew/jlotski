@@ -9,8 +9,8 @@ import static java.lang.Math.min;
  * Abstract base class for game pieces
  */
 abstract class Piece {
-    private int x=0, y=0;
     private final Vector<Cell> cells;
+    private int x=0, y=0;
     private Level level;
     private Point dragPoint;
 
@@ -23,7 +23,7 @@ abstract class Piece {
         this.x = x;
         this.y = y;
     }
-    public MoveRecord getMoveRecord() {
+    public MoveRecord newMoveRecord() {
         return new MoveRecord(this.x, this.y, this);
     }
 
@@ -31,42 +31,34 @@ abstract class Piece {
         this.level = level;
     }
 
-    public boolean loadCells(final Vector<String> data,char c){
-        boolean f = false;
+    public boolean loadCells(final Vector<String> data, char c){
         int x,y = 0;
+        StringBuffer cc = new StringBuffer().append(c);
         for(String s:data){
-            if (s.contains(new StringBuffer().append(c))) {
-                f = true;
+            if (s.contains(cc)) {
                 for(x=0; x<s.length();x++){
                     if (s.charAt(x) == c) this.addCell(x, y);
                 }
             }
             y++;
         }
-        normalize();
-        cells.forEach(this::findCorners);
-        return f;
+        if (this.cells.isEmpty()) return false;
+        this.normalize();
+        this.cells.forEach(this::findCorners);
+        return true;
     }
 
     abstract protected Cell newCell(int x, int y);
 
     void addCell(int x, int y){
-        Cell cell = newCell(x, y);
-        cells.add(cell);
+        this.cells.add(newCell(x, y));
     }
 
     private void normalize() {
-        int x = Integer.MAX_VALUE;
-        int y = Integer.MAX_VALUE;
-        for (Cell cell:cells) {
-            if (cell.getX()<x) x = cell.getX();
-            if (cell.getY()<y) y = cell.getY();
-        }
-        for (Cell cell:cells) {
-            cell.move(-x,-y);
-        }
-        this.x += x*Cell.CELLSIZE;
-        this.y += y*Cell.CELLSIZE;
+        final int x = this.cells.stream().mapToInt(Cell::getX).min().getAsInt();
+        final int y = this.cells.stream().mapToInt(Cell::getY).min().getAsInt();
+        this.cells.forEach(c -> c.move(-x, -y));
+        this.setXY(this.x + x*Cell.CELLSIZE, this.y + y*Cell.CELLSIZE);
     }
 
     public void changeCellSize(int newCellSize) {
@@ -76,66 +68,61 @@ abstract class Piece {
     }
 
     private void findCorners(Cell cell){
-        //noinspection Convert2streamapi
-        for(Cell c:cells) {
+        for(Cell c:this.cells) {
             if (c != cell) {
-                if (c.getY() == cell.getY()) {
-                    if (c.getX() == cell.getX() - 1) cell.corners.setW();
-                    if (c.getX() == cell.getX() + 1) cell.corners.setE();
-                }
-                if (c.getY() == cell.getY() - 1) {
-                    if (c.getX() == cell.getX() - 1) cell.corners.setNW();
-                    if (c.getX() == cell.getX()) cell.corners.setN();
-                    if (c.getX() == cell.getX() + 1) cell.corners.setNE();
-                }
-                if (c.getY() == cell.getY() + 1) {
-                    if (c.getX() == cell.getX() - 1) cell.corners.setSW();
-                    if (c.getX() == cell.getX()) cell.corners.setS();
-                    if (c.getX() == cell.getX() + 1) cell.corners.setSE();
+                switch (c.getY() - cell.getY()) {
+                    case 0 :
+                        switch (c.getX() - cell.getX()) {
+                            case -1 : cell.corners.setW(); break;
+                            case 1  : cell.corners.setE(); break;
+                        } break;
+                    case -1 :
+                        switch (c.getX() - cell.getX()) {
+                            case -1 : cell.corners.setNW(); break;
+                            case 0  : cell.corners.setN();  break;
+                            case 1  : cell.corners.setNE(); break;
+                        } break;
+                    case 1 :
+                        switch (c.getX() - cell.getX()) {
+                            case -1 : cell.corners.setSW(); break;
+                            case 0  : cell.corners.setS();  break;
+                            case 1  : cell.corners.setSE(); break;
+                        } break;
+
                 }
             }
         }
     }
 
-    protected boolean allowOverlap(Piece piece){
-        return piece == this;
+    protected boolean notAllowOverlap(Piece that){
+        return that != this;
     }
 
     boolean isOverlapped(Piece another, int dx, int dy){
         Point offset = new Point(x + dx,y + dy);
         Point anotherOffset = new Point(another.x, another.y);
-        for(Cell cell:cells){
-            for (Cell anotherCell:another.cells){
-                if (cell.isOverlapped(offset, anotherOffset, anotherCell))
-                    return true;
-            }
-        }
-        return false;
+        return this.cells.stream()
+                .map(cell -> another.cells.stream()
+                        .anyMatch(anotherCell -> cell.isOverlapped(offset, anotherOffset, anotherCell)))
+                .anyMatch(x -> x);
     }
 
     boolean isCoincided(Piece another, int dx, int dy){
         Point offset = new Point(x + dx,y + dy);
         Point anotherOffset = new Point(another.x, another.y);
-        for(Cell cell:cells){
-            boolean b = false;
-            for (Cell anotherCell:another.cells){
-                b = b || cell.isOverlapped(offset, anotherOffset, anotherCell);
-            }
-            if (!b) return false;
-        }
-        return true;
+        return this.cells.stream()
+                .map(cell -> another.cells.stream()
+                        .anyMatch(anotherCell -> cell.isOverlapped(offset, anotherOffset, anotherCell)))
+                .allMatch(x -> x);
     }
 
     boolean isInsidePiece(int x, int y){
-        for (Cell cell:cells){
-            if (cell.isInsideCell(x - this.x, y - this.y)) return true;
-        }
-        return false;
+        return this.cells.stream()
+                .anyMatch(cell -> cell.isInsideCell(x - this.x, y - this.y));
     }
 
     boolean isPieceInside(int dx, int dy, Rectangle rectangle) {
-        return cells
-                .stream()
+        return this.cells.stream()
                 .allMatch(c -> c.isCellInside(this.x + dx, this.y + dy, rectangle));
     }
 
@@ -154,11 +141,9 @@ abstract class Piece {
     boolean canMove(int dx, int dy, Vector<Piece> pieces) {
         if (!isPieceInside(dx, dy, new Rectangle(level.getLevelSize())))
             return false;
-        for(Piece piece:pieces){
-            if (allowOverlap(piece)) continue;
-            if (isOverlapped(piece, dx, dy)) return false;
-        }
-        return true;
+        return pieces.stream()
+                .filter(this::notAllowOverlap)
+                .noneMatch(another -> this.isOverlapped(another, dx, dy));
     }
 
     Point snapDirection() {
@@ -170,15 +155,15 @@ abstract class Piece {
         return new Point(dragPoint);
     }
 
+    void setDragPoint(Point dragPoint) {
+        this.dragPoint = dragPoint;
+    }
+
     public void setDragPoint(int x, int y) {
         setDragPoint(new Point(x, y));
     }
 
-    public void setDragPoint(Point dragPoint) {
-        this.dragPoint = dragPoint;
-    }
-
-    public void moveDragPoint(int dx, int dy) {
+    void moveDragPoint(int dx, int dy) {
         dragPoint.translate(dx, dy);
     }
 
@@ -225,8 +210,6 @@ abstract class Piece {
     }
 
     void paint(Graphics g){
-        for (Cell i: cells){
-            i.paint(x, y, g);
-        }
+        this.cells.forEach(cell -> cell.paint(this.x, this.y, g));
     }
 }

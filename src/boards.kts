@@ -156,14 +156,14 @@ Possible pieces are :
 @      ..  @
 
 <Success>
-@         a@
+@          @
 @ #######  @
 @ #**bbc#  @
 @ #defgh#  @
 @ #ijkgh-  @
 @ #llk  #  @
 @ #######  @
-@         m@
+@          @
 @  ..      @ 
 
 <Bone>
@@ -293,10 +293,10 @@ Possible pieces are :
 @       . . @
 
 <Shark>
-@...      uu   @
-@ .     t uu   @
+@...           @
+@ .            @
 @   ########   @
-@   #abijjk- vv@
+@   #abijjk-   @
 @   #ccijjl-   @
 @   #ddhmnp#   @
 @w  #***mop#   @

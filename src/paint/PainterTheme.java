@@ -11,7 +11,7 @@ public enum PainterTheme {
     Draw("Simple draw"),
     Image("Textured");
 
-    String themeName;
+    final String themeName;
 
     PainterTheme(String themeName){
         this.themeName = themeName;
@@ -21,7 +21,7 @@ public enum PainterTheme {
         return themeName;
     }
 
-    private static ArrayList<CellPainterCollection> painters = new ArrayList<>();
+    private static final ArrayList<CellPainterCollection> painters = new ArrayList<>();
 
     public static void registerPainterCollection(CellPainterCollection collection) {
         if (!PainterTheme.painters.contains(collection))

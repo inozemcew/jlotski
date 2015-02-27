@@ -31,7 +31,6 @@ public abstract class AbstractCellPainter implements CellPainter {
     @Override
     public void drawAll(Corners corners) {
         drawBG();
-        g.setColor(Color.black);
         drawNW(corners.nw);
         drawNE(corners.ne);
         drawSW(corners.sw);

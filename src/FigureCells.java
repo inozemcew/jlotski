@@ -3,7 +3,7 @@ import paint.*;
 import java.awt.*;
 
 class FigureCell extends Cell{
-    static CellPainterCollection painterCollection = new CellPainterCollection();
+    static final CellPainterCollection painterCollection = new CellPainterCollection();
     static {
         painterCollection.addPainter(PainterTheme.Draw,new CellDrawPainter());
         painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/green1.png"));
@@ -21,7 +21,7 @@ class FigureCell extends Cell{
 }
 
 class MainFigureCell extends FigureCell {
-    static CellPainterCollection painterCollection = new CellPainterCollection();
+    static final CellPainterCollection painterCollection = new CellPainterCollection();
     static {
         painterCollection.addPainter(PainterTheme.Draw,new CellDrawPainter(Color.red));
         painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/red1.png"));
@@ -47,7 +47,7 @@ class MainFigureCell extends FigureCell {
 
 
 class WallCell extends Cell{
-    static CellPainterCollection painterCollection = new CellPainterCollection();
+    static final CellPainterCollection painterCollection = new CellPainterCollection();
     static {
         painterCollection.addPainter(PainterTheme.Draw, new CellDrawPainter(Color.cyan));
         painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/blue1.png"));

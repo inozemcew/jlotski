@@ -5,30 +5,35 @@ import java.awt.*;
 public class CellDrawPainter extends AbstractCellPainter {
     private int b=2;
     private Color bgColor = Color.green;
-    private Color frameColor = Color.green;
+    private Color frameColor = Color.black;
 
     public CellDrawPainter() {
         super();
     }
 
-    public CellDrawPainter(Color c){
-        this(c,2);
+    public CellDrawPainter(Color bgColor){
+        this(bgColor,2);
     }
-    public CellDrawPainter(Color c, int b) {
-        this.bgColor = c;
+
+    public CellDrawPainter(Color bgColor, int b) {
+        this.bgColor = bgColor;
         this.b = b;
     }
 
+    @Override
     protected void drawFG(){
 
     }
 
+    @Override
     protected void drawBG(){
         g.setColor(bgColor);
-        g.fillRect(x, y, xw-x, yh-y);
+        g.fillRect(x, y, xw - x, yh - y);
     }
 
+    @Override
     protected void drawNW(CornerType type) {
+        g.setColor(frameColor);
         switch (type) {
             case Horizontal:
                 H(x, x + w, y, y + b, 0, 0, false);
@@ -48,7 +53,9 @@ public class CellDrawPainter extends AbstractCellPainter {
         }
     }
 
+    @Override
     protected void drawNE(CornerType type) {
+        g.setColor(frameColor);
         switch (type) {
             case Horizontal:
                 H(xw-w, xw, y, y+b, 0, 0,false);
@@ -68,7 +75,9 @@ public class CellDrawPainter extends AbstractCellPainter {
         }
     }
 
+    @Override
     protected void drawSW(CornerType type) {
+        g.setColor(frameColor);
         switch (type) {
             case Horizontal:
                 H(x, x + w, yh - b, yh, 0, 0);
@@ -88,7 +97,9 @@ public class CellDrawPainter extends AbstractCellPainter {
         }
     }
 
+    @Override
     protected void drawSE(CornerType type) {
+        g.setColor(frameColor);
         switch (type) {
             case Horizontal:
                 H(xw-w, xw, yh - b, yh, 0, 0);
@@ -107,8 +118,15 @@ public class CellDrawPainter extends AbstractCellPainter {
             case None:
         }
     }
-    private void plot(int x,int y){ g.drawLine(x,y,x,y); }
-    private void V(int xs, int xe, int ys, int ye, int dys, int dye) { V(xs, xe, ys, ye, dys, dye, true); }
+
+    private void plot(int x,int y) {
+        g.drawLine(x,y,x,y);
+    }
+
+    private void V(int xs, int xe, int ys, int ye, int dys, int dye) {
+        V(xs, xe, ys, ye, dys, dye, true);
+    }
+
     private void V(int xs, int xe, int ys, int ye, int dys, int dye, boolean s){
         for (int x = xs; x <= xe ; x++) {
             if (s || x==xs || x==xe) g.drawLine(x,ys,x,ye); else {
@@ -119,7 +137,11 @@ public class CellDrawPainter extends AbstractCellPainter {
             ye += dye;
         }
     }
-    private void H(int xs, int xe, int ys, int ye, int dxs, int dxe){H( xs, xe, ys, ye, dxs, dxe, true);}
+
+    private void H(int xs, int xe, int ys, int ye, int dxs, int dxe) {
+        H( xs, xe, ys, ye, dxs, dxe, true);
+    }
+
     private void H(int xs, int xe, int ys, int ye, int dxs, int dxe, boolean s){
         for (int y = ys; y <= ye ; y++) {
             if (s || y == ys || y == ye) g.drawLine(xs,y,xe,y); else {
