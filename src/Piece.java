@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.Collection;
 import java.util.Vector;
 
 import static java.lang.Math.max;
@@ -12,17 +13,26 @@ abstract class Piece {
     private final Vector<Cell> cells;
     private int x=0, y=0;
     private Level level;
-    private Point dragPoint;
+    private Point dragPoint = new Point();
 
     public Piece() {
         this.level = null;
         this.cells = new Vector<>();
     }
 
+    public Point getXY() {
+        return new Point(this.x, this.y);
+    }
+
+    public Point getXY(int dx, int dy) {
+        return new Point(this.x + dx, this.y + dy);
+    }
+
     public void setXY(int x, int y) {
         this.x = x;
         this.y = y;
     }
+
     public MoveRecord newMoveRecord() {
         return new MoveRecord(this.x, this.y, this);
     }
@@ -54,7 +64,7 @@ abstract class Piece {
         final int x = this.cells.stream().mapToInt(Cell::getX).min().getAsInt();
         final int y = this.cells.stream().mapToInt(Cell::getY).min().getAsInt();
         this.cells.forEach(c -> c.move(-x, -y));
-        this.setXY(this.x + x*Cell.CELLSIZE, this.y + y*Cell.CELLSIZE);
+        this.setXY(this.x + x * Cell.CELLSIZE, this.y + y * Cell.CELLSIZE);
     }
 
     public void changeCellSize(int newCellSize) {
@@ -89,13 +99,17 @@ abstract class Piece {
         }
     }
 
-    protected boolean notAllowOverlap(Piece that){
+    protected boolean cannotOverlap(Piece that){
         return that != this;
     }
 
+    protected boolean canPush(Piece that) {
+        return false;
+    }
+
     boolean isOverlapped(Piece another, int dx, int dy){
-        Point offset = new Point(x + dx,y + dy);
-        Point anotherOffset = new Point(another.x, another.y);
+        Point offset = this.getXY(dx, dy);
+        Point anotherOffset = another.getXY();
         return this.cells.stream()
                 .map(cell -> another.cells.stream()
                         .anyMatch(anotherCell -> cell.isOverlapped(offset, anotherOffset, anotherCell)))
@@ -103,8 +117,8 @@ abstract class Piece {
     }
 
     boolean isCoincided(Piece another, int dx, int dy){
-        Point offset = new Point(x + dx,y + dy);
-        Point anotherOffset = new Point(another.x, another.y);
+        Point offset = this.getXY(dx, dy);
+        Point anotherOffset = another.getXY();
         return this.cells.stream()
                 .map(cell -> another.cells.stream()
                         .anyMatch(anotherCell -> cell.isOverlapped(offset, anotherOffset, anotherCell)))
@@ -133,12 +147,59 @@ abstract class Piece {
         return (y %Cell.CELLSIZE == 0);
     }
 
-    boolean canMove(int dx, int dy, Vector<Piece> pieces) {
+    Collection<Piece> findMovingPieces(int dx, int dy, Collection<Piece> pieces) {
+        Collection<Piece> result = new Vector<>();
+        if (!isPieceInside(dx, dy, new Rectangle(level.getLevelSize())))
+            return result;
+        Vector<Piece> ps = new Vector<>(pieces);
+        ps.remove(this);
+        result.add(this);
+        for (Piece another : ps) {
+            if (this.isOverlapped(another, dx, dy)
+                    && this.cannotOverlap(another)
+                    && this.canPush(another)) {
+                Collection<Piece> rest = another.findMovingPieces(dx, dy, ps);
+                if (!rest.isEmpty())
+                    result.addAll(rest);
+                else
+                    return new Vector<>();
+            }
+
+        }
+        return result;
+    }
+
+    boolean canMove(int dx, int dy, Collection<Piece> pieces) {
+        return !findMovingPieces(dx, dy, pieces).isEmpty();
+    }
+
+    boolean canMove1(int dx, int dy, Collection<Piece> pieces) {
         if (!isPieceInside(dx, dy, new Rectangle(level.getLevelSize())))
             return false;
-        return pieces.stream()
-                .filter(this::notAllowOverlap)
-                .noneMatch(another -> this.isOverlapped(another, dx, dy));
+        Vector<Piece> ps = new Vector<>(pieces);
+        ps.remove(this);
+        for (Piece another : ps) {
+            if (this.cannotOverlap(another) && this.isOverlapped(another, dx, dy)) {
+                if ((this.canPush(another) && another.canMove(dx, dy, ps)))
+                    another.move(dx, dy, ps); //TODO: split move from test
+                else
+                    return false;
+            }
+
+        }
+        return true;
+        /*Vector<Piece> ps = new Vector<>(pieces);
+        ps.remove(this);
+        return ps.stream()
+                .filter(this::canPush)
+                .filter(p -> this.isOverlapped(p, dx, dy))
+                .filter(p -> p.canMove(dx, dy, ps))
+                .findAny().isPresent();
+        if ( pieces.stream()
+                .filter(this::cannotOverlap)
+                .noneMatch(another -> this.isOverlapped(another, dx, dy)) )
+            return true;
+        //return false;*/
     }
 
     Point snapDirection() {
@@ -190,14 +251,14 @@ abstract class Piece {
             moved = false;
             int d = h.least(dx, this.x);
             if ((d != 0) && canMove(d, 0, pieces)) {
-                x += d;
+                this.x += d;
                 dx -= d;
                 moveDragPoint(d, 0);
                 moved = true;
             }
             d = h.least(dy, this.y);
             if ((d != 0) && canMove(0, d, pieces)) {
-                y += d;
+                this.y += d;
                 dy -= d;
                 moveDragPoint(0, d);
                 moved = true;

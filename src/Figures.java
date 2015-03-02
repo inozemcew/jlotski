@@ -11,8 +11,13 @@ class Figure extends Piece{
     }
 
     @Override
-    protected boolean notAllowOverlap(Piece that) {
-        return super.notAllowOverlap(that) && (!(that instanceof Target));
+    protected boolean cannotOverlap(Piece that) {
+        return super.cannotOverlap(that) && (!(that instanceof Target));
+    }
+
+    @Override
+    protected boolean canPush(Piece that) {
+        return that instanceof Figure;
     }
 }
 
@@ -24,9 +29,10 @@ class MainFigure extends Figure{
     }
 
     @Override
-    protected boolean notAllowOverlap(Piece that) {
-        return super.notAllowOverlap(that) && (!(that instanceof Gate)) && (!(that instanceof Target));
+    protected boolean cannotOverlap(Piece that) {
+        return super.cannotOverlap(that) && (!(that instanceof Gate)) && (!(that instanceof Target));
     }
+
 }
 
 

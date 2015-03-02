@@ -59,7 +59,8 @@ public class Level {
 
     public boolean doSnap(int dx, int dy){
         if (draggingFigure == null || draggingFigure.isAligned()) {
-            this.endDrag();
+            this.updateRecord();
+            draggingFigure = null;
             return true;
         }
         Point point = draggingFigure.snapDirection();
@@ -75,7 +76,7 @@ public class Level {
 
     public boolean isGoal() {
         Piece main = null,target = null;
-        for (Piece p:this.pieces) {
+        for (Piece p : this.pieces) {
             if (p instanceof MainFigure) main = p;
             if (p instanceof Target) target = p;
             if ((main != null)&& (target != null))
@@ -84,7 +85,7 @@ public class Level {
         return false;
     }
 
-    public void endDrag() {
+    public void updateRecord() {
         if (draggingFigure == null) return;
         MoveRecord move = draggingFigure.newMoveRecord();
         if (!moveRecord.equals(move)) {
@@ -93,7 +94,6 @@ public class Level {
             else
                 moves.push(moveRecord);
         }
-        draggingFigure = null;
     }
 
     public int getMovesCount() {
