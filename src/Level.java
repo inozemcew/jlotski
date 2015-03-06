@@ -59,18 +59,17 @@ public class Level {
 
     public boolean doSnap(int dx, int dy){
         if (draggingFigure == null || draggingFigure.isAligned()) {
-            this.updateRecord();
-            draggingFigure = null;
-            return true;
+            Optional<Piece> p = this.pieces.stream().filter(x -> !x.isAligned()).findFirst();
+            if (p.isPresent()) {
+                p.get().snap(dx,dy,this.pieces);
+                return false;
+            } else {
+                this.updateRecord();
+                draggingFigure = null;
+                return true;
+            }
         }
-        Point point = draggingFigure.snapDirection();
-        int sx = dx > 0? 1: dx < 0 ? -1 : point.x;
-        if (draggingFigure.isXAligned())
-            sx = 0;
-        int sy = dy > 0 ? 1 : dy < 0 ? -1 : point.y;
-        if (draggingFigure.isYAligned())
-            sy = 0;
-        draggingFigure.move(sx, sy, this.pieces);
+        draggingFigure.snap(dx,dy,this.pieces);
         return false;
     }
 

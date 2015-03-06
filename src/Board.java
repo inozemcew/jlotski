@@ -17,7 +17,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     private final String levelsFileName = "/boards.kts";
     private Point oldDragPos;
     private Point oldDirection;
-    private final Timer timer = new Timer(10,this);
+    private final Timer timer = new Timer(5,this);
     private ActionListener moveListener = null;
     private boolean locked = true;
 
@@ -107,8 +107,8 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         if (locked ||timer.isRunning()) return;
         int dx = e.getX() - oldDragPos.x;
         int dy = e.getY() - oldDragPos.y;
-        dx = dx == 0 ? oldDirection.x : dx;
-        dy = dy == 0 ? oldDirection.y : dy;
+        dx = (dx == 0) ? oldDirection.x : dx;
+        dy = (dy == 0) ? oldDirection.y : dy;
         if (currentLevel.doSnap(dx, dy)) {
             moveListenerNotify();
             checkLevelComplete();

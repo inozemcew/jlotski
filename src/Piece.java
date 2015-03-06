@@ -147,7 +147,17 @@ abstract class Piece {
         return (y %Cell.CELLSIZE == 0);
     }
 
-    Collection<Piece> findMovingPieces(int dx, int dy, Collection<Piece> pieces) {
+    /**
+     * Checks collisions with other pieces and returns collection of pieces that should be moved also
+     * or empty list if such move is impossible
+     * @param dx - shift distance along x coordinate for movement
+     * @param dy - shift distance along x coordinate for movement
+     * @param pieces - collection of pieces that will be checked for possible collision
+     * @return - collection of pieces that would be pushed by this piece.
+     *           It contains at least this piece if move is possible.
+     *
+     */
+    Collection<Piece> findPushedPieces(int dx, int dy, Collection<Piece> pieces) {
         Collection<Piece> result = new Vector<>();
         if (!isPieceInside(dx, dy, new Rectangle(level.getLevelSize())))
             return result;
@@ -155,56 +165,23 @@ abstract class Piece {
         ps.remove(this);
         result.add(this);
         for (Piece another : ps) {
-            if (this.isOverlapped(another, dx, dy)
-                    && this.cannotOverlap(another)
-                    && this.canPush(another)) {
-                Collection<Piece> rest = another.findMovingPieces(dx, dy, ps);
-                if (!rest.isEmpty())
-                    result.addAll(rest);
-                else
-                    return new Vector<>();
+            if (this.isOverlapped(another, dx, dy) && this.cannotOverlap(another)) {
+                if (this.canPush(another)) {
+                    Collection<Piece> rest = another.findPushedPieces(dx, dy, ps);
+                    if (!rest.isEmpty()) {
+                        result.addAll(rest);
+                        continue;
+                    }
+                }
+                result.clear();
+                return result;
             }
-
         }
         return result;
     }
 
     boolean canMove(int dx, int dy, Collection<Piece> pieces) {
-        return !findMovingPieces(dx, dy, pieces).isEmpty();
-    }
-
-    boolean canMove1(int dx, int dy, Collection<Piece> pieces) {
-        if (!isPieceInside(dx, dy, new Rectangle(level.getLevelSize())))
-            return false;
-        Vector<Piece> ps = new Vector<>(pieces);
-        ps.remove(this);
-        for (Piece another : ps) {
-            if (this.cannotOverlap(another) && this.isOverlapped(another, dx, dy)) {
-                if ((this.canPush(another) && another.canMove(dx, dy, ps)))
-                    another.move(dx, dy, ps); //TODO: split move from test
-                else
-                    return false;
-            }
-
-        }
-        return true;
-        /*Vector<Piece> ps = new Vector<>(pieces);
-        ps.remove(this);
-        return ps.stream()
-                .filter(this::canPush)
-                .filter(p -> this.isOverlapped(p, dx, dy))
-                .filter(p -> p.canMove(dx, dy, ps))
-                .findAny().isPresent();
-        if ( pieces.stream()
-                .filter(this::cannotOverlap)
-                .noneMatch(another -> this.isOverlapped(another, dx, dy)) )
-            return true;
-        //return false;*/
-    }
-
-    Point snapDirection() {
-        return new Point(x % Cell.CELLSIZE < Cell.CELLSIZE / 2 ? -1 : 1
-                       , y % Cell.CELLSIZE < Cell.CELLSIZE / 2 ? -1 : 1);
+        return !findPushedPieces(dx, dy, pieces).isEmpty();
     }
 
     public Point getDragPoint() {
@@ -228,7 +205,7 @@ abstract class Piece {
         move(d.x, d.y, pieces);
     }
 
-    boolean move(int dx, int dy, Vector<Piece> pieces) {
+    boolean move(int dx, int dy, Collection<Piece> pieces) {
 
         class Helper {
             final int c = Cell.CELLSIZE;
@@ -246,26 +223,59 @@ abstract class Piece {
 
         Helper h=new Helper();
         boolean moved;
+        Collection<Piece> ps;
         do {
             //System.err.println(x + ", " + y + ", " + dx + ", " + dy);
             moved = false;
-            int d = h.least(dx, this.x);
-            if ((d != 0) && canMove(d, 0, pieces)) {
-                this.x += d;
-                dx -= d;
-                moveDragPoint(d, 0);
-                moved = true;
+            int xd = h.least(dx, this.x);
+            if (xd != 0) {
+                ps = this.findPushedPieces(xd, 0, pieces);
+                if (!ps.isEmpty()) {
+                    ps.forEach(p -> p.setXY(p.x+xd, p.y));
+                    dx -= xd;
+                    moveDragPoint(xd, 0);
+                    moved = true;
+                }
             }
-            d = h.least(dy, this.y);
-            if ((d != 0) && canMove(0, d, pieces)) {
-                this.y += d;
-                dy -= d;
-                moveDragPoint(0, d);
-                moved = true;
+            int yd = h.least(dy, this.y);
+            if (yd != 0) {
+                ps = findPushedPieces(0, yd, pieces);
+                if (!ps.isEmpty()) {
+                    ps.forEach(p -> p.setXY(p.x, p.y+yd));
+                    dy -= yd;
+                    moveDragPoint(0, yd);
+                    moved = true;
+                }
             }
             if ((dx == 0) && (dy == 0)) break;
         } while (moved);
         return moved;
+    }
+
+    Point snapDirection(int dx, int dy) {
+        int sx = 0, sy = 0;
+        int c = Cell.CELLSIZE / 2;
+
+        if (!this.isXAligned()) {
+            if (dx != 0)
+                sx = (dx > 0) ? 1 : -1;
+            else
+                sx = this.x % Cell.CELLSIZE < c ? -1 : 1;
+        }
+
+        if (!this.isYAligned()) {
+            if (dy != 0)
+                sy = (dy > 0) ? 1 : -1;
+            else
+                sy = this.y % Cell.CELLSIZE < c ? -1 : 1;
+        }
+
+        return new Point(sx, sy);
+    }
+
+    void snap(int dx, int dy, Collection<Piece> pieces) {
+        Point p = this.snapDirection(dx, dy);
+        this.move(p.x, p.y, pieces);
     }
 
     void paint(Graphics g){
