@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import static java.lang.Math.max;
@@ -180,6 +182,7 @@ abstract class Piece {
         return result;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     boolean canMove(int dx, int dy, Collection<Piece> pieces) {
         return !findPushedPieces(dx, dy, pieces).isEmpty();
     }
@@ -201,11 +204,11 @@ abstract class Piece {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    void move(Point d, Vector<Piece> pieces){
+    void move(Point d, Collection<Piece> pieces){
         move(d.x, d.y, pieces);
     }
 
-    boolean move(int dx, int dy, Collection<Piece> pieces) {
+    Collection<Piece> move(int dx, int dy, Collection<Piece> pieces) {
 
         class Helper {
             final int c = Cell.CELLSIZE;
@@ -223,6 +226,7 @@ abstract class Piece {
 
         Helper h=new Helper();
         boolean moved;
+        Set<Piece> pieceSet = new HashSet<>();
         Collection<Piece> ps;
         do {
             //System.err.println(x + ", " + y + ", " + dx + ", " + dy);
@@ -235,6 +239,7 @@ abstract class Piece {
                     dx -= xd;
                     moveDragPoint(xd, 0);
                     moved = true;
+                    pieceSet.addAll(ps);
                 }
             }
             int yd = h.least(dy, this.y);
@@ -245,11 +250,12 @@ abstract class Piece {
                     dy -= yd;
                     moveDragPoint(0, yd);
                     moved = true;
+                    pieceSet.addAll(ps);
                 }
             }
             if ((dx == 0) && (dy == 0)) break;
         } while (moved);
-        return moved;
+        return pieceSet;
     }
 
     Point snapDirection(int dx, int dy) {
@@ -273,9 +279,9 @@ abstract class Piece {
         return new Point(sx, sy);
     }
 
-    void snap(int dx, int dy, Collection<Piece> pieces) {
+    Collection<Piece> snap(int dx, int dy, Collection<Piece> pieces) {
         Point p = this.snapDirection(dx, dy);
-        this.move(p.x, p.y, pieces);
+        return this.move(p.x, p.y, pieces);
     }
 
     void paint(Graphics g){

@@ -2,9 +2,11 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Representation of a game level
@@ -58,19 +60,20 @@ public class Level {
     }
 
     public boolean doSnap(int dx, int dy){
-        if (draggingFigure == null || draggingFigure.isAligned()) {
-            Optional<Piece> p = this.pieces.stream().filter(x -> !x.isAligned()).findFirst();
-            if (p.isPresent()) {
-                p.get().snap(dx,dy,this.pieces);
-                return false;
-            } else {
-                this.updateRecord();
-                draggingFigure = null;
-                return true;
-            }
+        Set<Piece> unalignedPieces = this.pieces.stream().filter(x -> !x.isAligned()).collect(Collectors.toSet());
+        if (unalignedPieces.isEmpty()) {
+            this.updateRecord();
+            draggingFigure = null;
+            return true;
         }
-        draggingFigure.snap(dx,dy,this.pieces);
-        return false;
+        if (draggingFigure != null && !draggingFigure.isAligned()) {
+            unalignedPieces.removeAll(draggingFigure.snap(dx, dy, this.pieces));
+        }
+        while (!unalignedPieces.isEmpty()) {
+            Piece p = unalignedPieces.stream().findFirst().get();
+            unalignedPieces.removeAll(p.snap(0, 0, this.pieces));
+        }
+    return false;
     }
 
     public boolean isGoal() {
