@@ -1,15 +1,18 @@
 /**
+ * MoveRecord holds coordinates for move been made
  * Created by ainozemtsev on 26.11.14.
  */
 public class MoveRecord {
     final int x;
     final int y;
     final Piece piece;
+    boolean dragged;
 
     public MoveRecord(int x, int y, Piece piece) {
         this.x = x;
         this.y = y;
         this.piece = piece;
+        this.dragged = false;
     }
 
     @Override
@@ -20,11 +23,6 @@ public class MoveRecord {
         MoveRecord that = (MoveRecord) o;
 
         return (this.x == that.x) && (this.y == that.y) && (piece == that.piece);
-        /*if (x != that.x) return false;
-        if (y != that.y) return false;
-        if (piece != that.piece) return false;
-
-        return true;*/
     }
 
     @Override
@@ -35,5 +33,8 @@ public class MoveRecord {
         return result;
     }
 
+    public void setDragged() {
+        this.dragged = true;
+    }
 }
 

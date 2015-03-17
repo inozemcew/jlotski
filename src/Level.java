@@ -1,10 +1,8 @@
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -20,8 +18,8 @@ public class Level {
     private final Dimension size = new Dimension(0,0);
     private Piece draggingFigure = null;
 
-    private final Stack<MoveRecord> moves = new Stack<>();
-    private MoveRecord moveRecord = null;
+    private final Stack<MoveRecord> recordStack = new Stack<>();
+    //private MoveRecord moveRecord = null;
 
     public Level() {
     }
@@ -47,7 +45,7 @@ public class Level {
         draggingFigure = f.orElse(null);
         if (draggingFigure != null) {
             draggingFigure.setDragPoint(x, y);
-            moveRecord = draggingFigure.newMoveRecord();
+            //moveRecord = draggingFigure.newMoveRecord();
         }
         return f.isPresent();
     }
@@ -89,24 +87,31 @@ public class Level {
 
     public void updateRecord() {
         if (draggingFigure == null) return;
-        MoveRecord move = draggingFigure.newMoveRecord();
-        if (!moveRecord.equals(move)) {
-            if (!moves.empty() && moves.peek().equals(move))
-                moves.pop();
-            else
-                moves.push(moveRecord);
+        List<MoveRecord> moves = this.pieces.stream()
+                .map(Piece::collectMoveRecord)
+                .filter(p -> p != null)
+                .collect(Collectors.toList());
+        if (!moves.isEmpty()) {
+            if (!recordStack.empty() && moves.size() == 1
+                    && recordStack.peek().equals(moves.get(0).piece.getNewMoveRecord())) {
+                recordStack.pop();
+            } else {
+                moves.get(0).setDragged();
+                moves.forEach(recordStack::push);
+            }
         }
     }
 
     public int getMovesCount() {
-        return moves.size();
+        return recordStack.size();
     }
 
     public boolean undo() {
-        if (!moves.empty()) {
-            MoveRecord move = moves.pop();
+        while (!recordStack.empty()) {
+            MoveRecord move = recordStack.pop();
             move.piece.setXY(move.x, move.y);
-            return true;
+            if (move.dragged)
+                return true;
         }
         return false;
     }

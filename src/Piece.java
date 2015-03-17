@@ -16,6 +16,7 @@ abstract class Piece {
     private int x=0, y=0;
     private Level level;
     private Point dragPoint = new Point();
+    private MoveRecord moveRecord = null;
 
     public Piece() {
         this.level = null;
@@ -35,7 +36,21 @@ abstract class Piece {
         this.y = y;
     }
 
-    public MoveRecord newMoveRecord() {
+    public void newMoveRecord() {
+        if (this.moveRecord == null)
+            this.moveRecord = getNewMoveRecord();
+    }
+
+    public MoveRecord collectMoveRecord() {
+        MoveRecord result = this.moveRecord;
+        this.moveRecord = null;
+        if (result == null || result.equals(getNewMoveRecord()))
+            return null;
+        else
+            return result;
+    }
+
+    public final MoveRecord getNewMoveRecord() {
         return new MoveRecord(this.x, this.y, this);
     }
 
@@ -235,7 +250,10 @@ abstract class Piece {
             if (xd != 0) {
                 ps = this.findPushedPieces(xd, 0, pieces);
                 if (!ps.isEmpty()) {
-                    ps.forEach(p -> p.setXY(p.x+xd, p.y));
+                    ps.forEach(p -> {
+                        p.newMoveRecord();
+                        p.setXY(p.x+xd, p.y);
+                    });
                     dx -= xd;
                     moveDragPoint(xd, 0);
                     moved = true;
@@ -246,7 +264,10 @@ abstract class Piece {
             if (yd != 0) {
                 ps = findPushedPieces(0, yd, pieces);
                 if (!ps.isEmpty()) {
-                    ps.forEach(p -> p.setXY(p.x, p.y+yd));
+                    ps.forEach(p -> {
+                        p.newMoveRecord();
+                        p.setXY(p.x, p.y+yd);
+                    });
                     dy -= yd;
                     moveDragPoint(0, yd);
                     moved = true;
