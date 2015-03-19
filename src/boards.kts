@@ -395,16 +395,16 @@ Possible pieces are :
 @AAAAA#################BBBBB@
 @AAAAA#aabccd***effghh#BBBBB@
 @AAAAA#aabcc** **ffghh#BBBBB@
-@AAAAA#iijkk* l *mmnoo#BBBBB@
+@AAAAA#iijkk*   *mmnoo#BBBBB@
 @AAAAA#ppqrr** **sstuu#BBBBB@
 @     #ppqrrv***wsstuu#     @
-@CCDEE#xxxxxyyzAABBBBB#FFGHH@
-@CCDEE#xxxxxyyzAABBBBB#FFGHH@
-@II JJ#xxxxxCC DDBBBBB#KK LL@
+@SSTEE#xxxxxyyzAABBBBB#FFGHH@
+@SSTEE#xxxxxyyzAABBBBB#FFGHH@
+@II JJ#xxxxxCC UUBBBBB#KK LL@
 @MMNOO#xxxxxDDEFFBBBBB#PPQRR@
 @MMNOO#xxxxxDDEFFBBBBB#PPQRR@
-@     #GGHIIJJKLLMMNOO#     @
-@AAAAA#GGPIIJJ LLMMQOO#BBBBB@
+@     #GGHIIJJKLLmmnCC#     @
+@AAAAA#GGPIIJJ LLmmQCC#BBBBB@
 @AAAAA#RSTUVW X YZ0123#BBBBB@
 @AAAAA#4456677 8899abb#BBBBB@
 @AAAAA#44c6677d8899ebb#BBBBB@

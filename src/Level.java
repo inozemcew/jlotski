@@ -1,8 +1,8 @@
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -19,7 +19,6 @@ public class Level {
     private Piece draggingFigure = null;
 
     private final Stack<MoveRecord> recordStack = new Stack<>();
-    //private MoveRecord moveRecord = null;
 
     public Level() {
     }
@@ -38,16 +37,13 @@ public class Level {
     }
 
     public boolean startDrag(int x, int y) {
-        Optional<Piece> f = pieces.stream()
-                .filter(s -> s instanceof Figure)
-                .filter(s -> s.isInsidePiece(x, y))
-                .findFirst();
-        draggingFigure = f.orElse(null);
-        if (draggingFigure != null) {
-            draggingFigure.setDragPoint(x, y);
-            //moveRecord = draggingFigure.newMoveRecord();
-        }
-        return f.isPresent();
+        this.draggingFigure = this.pieces.stream()
+                .filter(piece -> piece instanceof Figure && piece.isInsidePiece(x, y))
+                .findFirst().orElse(null);
+        if (this.draggingFigure == null)
+            return false;
+        this.draggingFigure.setDragPoint(x, y);
+        return true;
     }
 
     public Point doDrag(int dx, int dy) {
@@ -178,11 +174,18 @@ public class Level {
     }
 
     private void createFigures(char f, char t, PieceCreator<? extends Piece> F) {
+        List<StringBuilder> d = new ArrayList<>();
+        data.forEach(s -> d.add(new StringBuilder(s)));
         for (char c = f; c <= t; c++) {
-            Piece fig = F.create();
-            fig.setLevel(this);
-            if (fig.loadCells(data, c)) pieces.add(fig);
+            boolean loaded;
+            do {
+                Piece fig = F.create();
+                fig.setLevel(this);
+                loaded = fig.loadCells(d, c);
+                if (loaded) pieces.add(fig);
+            } while (loaded);
         }
     }
+
 }
 

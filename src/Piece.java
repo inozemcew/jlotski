@@ -1,8 +1,6 @@
 import java.awt.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
+import java.util.List;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -60,15 +58,20 @@ abstract class Piece {
 
     abstract protected Cell newCell(int x, int y);
 
-    public boolean loadCells(final Vector<String> data, char c){
+    public boolean loadCells(List<StringBuilder> data, char c){
         int x,y = 0;
-        StringBuffer cc = new StringBuffer().append(c);
-        for(String s:data){
-            if (s.contains(cc)) {
+        boolean loading = false;
+        String cc = Character.toString(c);
+        for(StringBuilder s:data){
+            if (s.indexOf(cc)>=0) {
+                loading = true;
                 for(x=0; x<s.length();x++){
-                    if (s.charAt(x) == c) this.cells.add(newCell(x, y));
+                    if (s.charAt(x) == c) {
+                        this.cells.add(newCell(x, y));
+                        s.setCharAt(x,' ');
+                    }
                 }
-            }
+            } else if (loading) break;
             y++;
         }
         if (this.cells.isEmpty()) return false;
@@ -181,11 +184,12 @@ abstract class Piece {
         Vector<Piece> ps = new Vector<>(pieces);
         ps.remove(this);
         result.add(this);
-        for (Piece another : ps) {
-            if (this.isOverlapped(another, dx, dy) && this.cannotOverlap(another)) {
+        for (Piece another : pieces) {
+            if (another != this && this.isOverlapped(another, dx, dy) && this.cannotOverlap(another)) {
                 if (this.canPush(another)) {
                     Collection<Piece> rest = another.findPushedPieces(dx, dy, ps);
                     if (!rest.isEmpty()) {
+                        ps.removeAll(rest);
                         result.addAll(rest);
                         continue;
                     }

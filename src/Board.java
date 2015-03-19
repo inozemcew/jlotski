@@ -84,8 +84,8 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
-        if (locked || timer.isRunning()) return;
+    public synchronized void mouseDragged(MouseEvent e) {
+        if (this.locked || timer.isRunning()) return;
         int dx = e.getX() - oldDragPos.x;
         int dy = e.getY() - oldDragPos.y;
         Point p = currentLevel.doDrag(dx, dy);
@@ -103,7 +103,7 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     public void mouseMoved(MouseEvent e) {    }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public synchronized void mouseReleased(MouseEvent e) {
         if (locked ||timer.isRunning()) return;
         int dx = e.getX() - oldDragPos.x;
         int dy = e.getY() - oldDragPos.y;
@@ -121,11 +121,11 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
     }
 
     @Override // onTimer method
-    public void actionPerformed(ActionEvent actionEvent) {
+    public synchronized void actionPerformed(ActionEvent actionEvent) {
         if (currentLevel.doSnap(oldDragPos.x, oldDragPos.y)) {
+            timer.stop();
             moveListenerNotify();
             checkLevelComplete();
-            timer.stop();
         }
         repaint();
     }
