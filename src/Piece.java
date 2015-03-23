@@ -10,7 +10,7 @@ import static java.lang.Math.min;
  * Abstract base class for game pieces
  */
 abstract class Piece {
-    private final Vector<Cell> cells;
+    private final ArrayList<Cell> cells;
     private int x=0, y=0;
     private Level level;
     private Point dragPoint = new Point();
@@ -18,7 +18,7 @@ abstract class Piece {
 
     public Piece() {
         this.level = null;
-        this.cells = new Vector<>();
+        this.cells = new ArrayList<>();
     }
 
     public Point getXY() {
@@ -178,14 +178,16 @@ abstract class Piece {
      *
      */
     Collection<Piece> findPushedPieces(int dx, int dy, Collection<Piece> pieces) {
-        Collection<Piece> result = new Vector<>();
+        Collection<Piece> result = new HashSet<>();
         if (!isPieceInside(dx, dy, new Rectangle(level.getLevelSize())))
             return result;
-        Vector<Piece> ps = new Vector<>(pieces);
+        List<Piece> ps = new ArrayList<>(pieces);
         ps.remove(this);
         result.add(this);
         for (Piece another : pieces) {
-            if (another != this && this.isOverlapped(another, dx, dy) && this.cannotOverlap(another)) {
+            if (!result.contains(another)
+                    && this.isOverlapped(another, dx, dy)
+                    && this.cannotOverlap(another)) {
                 if (this.canPush(another)) {
                     Collection<Piece> rest = another.findPushedPieces(dx, dy, ps);
                     if (!rest.isEmpty()) {
