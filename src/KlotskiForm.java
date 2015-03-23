@@ -25,6 +25,7 @@ public class KlotskiForm {
     private JButton backButton;
     private JLabel movesLabel;
     private JLabel levelNameLabel;
+    private JSlider slider1;
 
     private Board board;
     private static JFrame frame;
@@ -40,12 +41,19 @@ public class KlotskiForm {
         this.resetButton.addActionListener(e -> setLevel(board.getCurrentLevelNumber()));
         this.board.setMoveListener(e -> movesLabel.setText(formatMovesMsg(e.getActionCommand())));
         this.backButton.addActionListener(e -> undo());
+        slider1.addChangeListener(event -> changeCellSize());
     }
 
     private void undo() {
         board.currentLevel.undo();
         movesLabel.setText(formatMovesMsg(Integer.toString(board.currentLevel.getMovesCount())));
         frame.repaint();
+    }
+
+    private void changeCellSize() {
+        board.setCellSize(slider1.getValue());
+        board.updateBounds();
+        frame.pack();
     }
 
     private String formatMovesMsg(String count) {
@@ -68,6 +76,7 @@ public class KlotskiForm {
         JMenu menu = new JMenu(langBundle.getString("game"));
         menu.setName("game");
         menu.setMnemonic('G');
+
         JMenuItem menuItem = new JMenuItem(langBundle.getString("exit"));
         menuItem.setName("exit");
         menuItem.setAccelerator(KeyStroke.getKeyStroke("ctrl Q"));
@@ -78,6 +87,7 @@ public class KlotskiForm {
         menu = new JMenu(langBundle.getString("levels"));
         menu.setName("levels");
         menu.setMnemonic('L');
+
         ButtonGroup group = new ButtonGroup();
         int i = 0;
         for (String level:board.getLevelNames()) {

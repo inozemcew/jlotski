@@ -3,6 +3,7 @@ import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.List;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
@@ -43,10 +44,10 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         return currentLevelNumber;
     }
 
-    public Vector<String> getLevelNames() {
+    public List<String> getLevelNames() {
         return levels.stream()
                 .map(Level::getName)
-                .collect(Collectors.toCollection(Vector::new));
+                .collect(Collectors.toList());
     }
 
     public void setLevel(int index){
@@ -142,11 +143,21 @@ public class Board extends JComponent implements MouseInputListener, ActionListe
         Dimension d = getSize();
         Dimension l = currentLevel.getLevelSize();
         int newCellSize = Integer.min(Cell.CELLSIZE * d.width / l.width, Cell.CELLSIZE * d.height / l.height);
+        setCellSize(newCellSize);
+        repaint();
+    }
+
+    public void setCellSize(int newCellSize) {
         if (newCellSize > 3 && newCellSize != Cell.CELLSIZE) {
             currentLevel.forAllPieces(p -> p.changeCellSize(newCellSize));
             Cell.CELLSIZE = newCellSize;
-            repaint();
         }
+    }
+
+    public void updateBounds() {
+        Dimension levelSize = currentLevel.getLevelSize();
+        this.setPreferredSize(levelSize);
+        this.setSize(levelSize);
     }
 
     private void checkLevelComplete() {

@@ -9,7 +9,9 @@
     <children>
       <toolbar id="e59ab">
         <constraints border-constraint="North"/>
-        <properties/>
+        <properties>
+          <preferredSize width="313" height="48"/>
+        </properties>
         <border type="none"/>
         <children>
           <component id="1855a" class="javax.swing.JButton" binding="exitButton" default-binding="true">
@@ -50,6 +52,31 @@
           <component id="4906b" class="javax.swing.JToolBar$Separator">
             <constraints/>
             <properties/>
+          </component>
+          <component id="f296d" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <horizontalTextPosition value="2"/>
+              <name value="cellsize"/>
+              <text resource-bundle="i18n" key="cellsize"/>
+            </properties>
+          </component>
+          <component id="b71bc" class="javax.swing.JSlider" binding="slider1" default-binding="true">
+            <constraints/>
+            <properties>
+              <inverted value="false"/>
+              <majorTickSpacing value="20"/>
+              <maximum value="64"/>
+              <maximumSize width="128" height="45"/>
+              <minimum value="4"/>
+              <minimumSize width="64" height="45"/>
+              <minorTickSpacing value="5"/>
+              <orientation value="0"/>
+              <paintLabels value="false"/>
+              <paintTicks value="true"/>
+              <preferredSize width="45" height="45"/>
+              <value value="32"/>
+            </properties>
           </component>
         </children>
       </toolbar>
