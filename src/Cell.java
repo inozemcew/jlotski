@@ -27,11 +27,11 @@ abstract class Cell {
     }
 
     public int getX() {
-        return x;
+        return this.x;
     }
 
     public int getY() {
-        return y;
+        return this.y;
     }
 
     private Point getAbsCoord(int offsetX, int offsetY) {
@@ -58,7 +58,7 @@ abstract class Cell {
 
     protected void doPaint(int x, int y, int w, int h, Graphics g){
         getCellPainter().setContext(g, x, y, w, h);
-        getCellPainter().drawAll(corners);
+        getCellPainter().drawAll(this.corners);
     }
 
     public boolean isInsideCell(int x, int y) {

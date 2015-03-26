@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -47,21 +48,21 @@ public class Level {
     }
 
     public Point doDrag(int dx, int dy) {
-        if (draggingFigure == null)
+        if (this.draggingFigure == null)
             return null;
-        draggingFigure.move(dx, dy, this.pieces);
-        return draggingFigure.getDragPoint();
+        this.draggingFigure.move(dx, dy, this.pieces);
+        return this.draggingFigure.getDragPoint();
     }
 
     public boolean doSnap(int dx, int dy){
         Set<Piece> unalignedPieces = this.pieces.stream().filter(x -> !x.isAligned()).collect(Collectors.toSet());
         if (unalignedPieces.isEmpty()) {
             this.updateRecord();
-            draggingFigure = null;
+            this.draggingFigure = null;
             return true;
         }
-        if (draggingFigure != null && !draggingFigure.isAligned()) {
-            unalignedPieces.removeAll(draggingFigure.snap(dx, dy, this.pieces));
+        if (this.draggingFigure != null && !this.draggingFigure.isAligned()) {
+            unalignedPieces.removeAll(this.draggingFigure.snap(dx, dy, this.pieces));
         }
         while (!unalignedPieces.isEmpty()) {
             Piece p = unalignedPieces.stream().findFirst().get();
@@ -82,29 +83,29 @@ public class Level {
     }
 
     public void updateRecord() {
-        if (draggingFigure == null) return;
+        if (this.draggingFigure == null) return;
         List<MoveRecord> moves = this.pieces.stream()
                 .map(Piece::collectMoveRecord)
                 .filter(p -> p != null)
                 .collect(Collectors.toList());
         if (!moves.isEmpty()) {
-            if (!recordStack.empty() && moves.size() == 1
-                    && recordStack.peek().equals(moves.get(0).piece.getNewMoveRecord())) {
-                recordStack.pop();
+            if (!this.recordStack.empty() && moves.size() == 1
+                    && this.recordStack.peek().equals(moves.get(0).piece.getNewMoveRecord())) {
+                this.recordStack.pop();
             } else {
                 moves.get(0).setDragged();
-                moves.forEach(recordStack::push);
+                moves.forEach(this.recordStack::push);
             }
         }
     }
 
     public int getMovesCount() {
-        return recordStack.size();
+        return this.recordStack.size();
     }
 
     public boolean undo() {
-        while (!recordStack.empty()) {
-            MoveRecord move = recordStack.pop();
+        while (!this.recordStack.empty()) {
+            MoveRecord move = this.recordStack.pop();
             move.piece.setXY(move.x, move.y);
             if (move.dragged)
                 return true;
@@ -113,14 +114,14 @@ public class Level {
     }
 
     public Level getCopy() {
-        Level newLevel = new Level(name, data);
-        newLevel.setSize(size);
+        Level newLevel = new Level(this.name, this.data);
+        newLevel.setSize(this.size);
         newLevel.createPieces();
         return newLevel;
     }
 
     public Dimension getLevelSize() {
-        return new Dimension(size.width * Cell.CELLSIZE, size.height * Cell.CELLSIZE);
+        return new Dimension(this.size.width * Cell.CELLSIZE, this.size.height * Cell.CELLSIZE);
     }
 
     public void setSize(Dimension size) {
@@ -149,17 +150,13 @@ public class Level {
             this.data.clear();
             return false;
         }
-        size.setSize(x,y);
+        this.size.setSize(x, y);
         createPieces();
         return true;
     }
 
     public void paint(Graphics g) {
         this.pieces.forEach(p -> p.paint(g));
-    }
-
-    interface PieceCreator<P extends Piece>{
-        public P create();
     }
 
     private void createPieces() {
@@ -173,16 +170,16 @@ public class Level {
         createFigures('.','.',Target::new);
     }
 
-    private void createFigures(char f, char t, PieceCreator<? extends Piece> F) {
+    private <P extends Piece> void createFigures(char f, char t, Supplier<P> F) {
         List<StringBuilder> d = new ArrayList<>();
-        data.forEach(s -> d.add(new StringBuilder(s)));
+        this.data.forEach(s -> d.add(new StringBuilder(s)));
         for (char c = f; c <= t; c++) {
             boolean loaded;
             do {
-                Piece fig = F.create();
+                P fig = F.get();
                 fig.setLevel(this);
                 loaded = fig.loadCells(d, c);
-                if (loaded) pieces.add(fig);
+                if (loaded) this.pieces.add(fig);
             } while (loaded);
         }
     }

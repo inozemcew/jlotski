@@ -6,11 +6,10 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.prefs.Preferences;
 
 /**
  * Java version of klotski game
@@ -27,32 +26,39 @@ public class KlotskiForm {
     private JLabel levelNameLabel;
     private JSlider slider1;
 
+    final MainMenu mainMenu;
     private Board board;
     private static JFrame frame;
-    private JMenuBar menuBar;
 
     static Languages langBundle;
+    private Preferences prefs = Preferences.userNodeForPackage(KlotskiForm.class);
 
     public KlotskiForm() {
-        KlotskiForm.langBundle = new Languages();
+        langBundle = new Languages();
         this.board = new Board();
+        this.mainMenu = new MainMenu(this.board.getLevelNames());
         this.boardPanel.add(this.board);
         this.exitButton.addActionListener(e -> System.exit(0));
-        this.resetButton.addActionListener(e -> setLevel(board.getCurrentLevelNumber()));
-        this.board.setMoveListener(e -> movesLabel.setText(formatMovesMsg(e.getActionCommand())));
+        this.resetButton.addActionListener(e -> setLevel(this.board.getCurrentLevelNumber()));
+        this.board.setMoveListener(e -> this.movesLabel.setText(formatMovesMsg(e.getActionCommand())));
         this.backButton.addActionListener(e -> undo());
-        slider1.addChangeListener(event -> changeCellSize());
+        this.slider1.addChangeListener(event -> changeCellSize());
+    }
+
+    private void loadPrefs() {
+        themeChanged(this.prefs.get("theme", PainterTheme.values()[0].name()));
+        languageChanged(this.prefs.get("language", langBundle.getDefaultLanguage()));
     }
 
     private void undo() {
-        board.currentLevel.undo();
-        movesLabel.setText(formatMovesMsg(Integer.toString(board.currentLevel.getMovesCount())));
+        this.board.currentLevel.undo();
+        this.movesLabel.setText(formatMovesMsg(Integer.toString(this.board.currentLevel.getMovesCount())));
         frame.repaint();
     }
 
     private void changeCellSize() {
-        board.setCellSize(slider1.getValue());
-        board.updateBounds();
+        this.board.setCellSize(this.slider1.getValue());
+        this.board.updateBounds();
         frame.pack();
     }
 
@@ -61,79 +67,21 @@ public class KlotskiForm {
     }
 
     private void setLevel(int index) {
-        board.setLevel(index);
-        menuBar.getMenu(1).getItem(index-1).setSelected(true);
-        welcomeLabel.setVisible(false);
-        levelNameLabel.setVisible(true);
-        levelNameLabel.setText(board.currentLevel.getName());
-        movesLabel.setText("");
+        this.board.setLevel(index);
+        this.mainMenu.selectLevelItem(index);
+        this.welcomeLabel.setVisible(false);
+        this.levelNameLabel.setVisible(true);
+        this.levelNameLabel.setText(this.board.currentLevel.getName());
+        this.movesLabel.setText("");
         frame.pack();
         frame.repaint();
     }
 
-    private JMenuBar createMenu() {
-        menuBar = new JMenuBar();
-        JMenu menu = new JMenu(langBundle.getString("game"));
-        menu.setName("game");
-        menu.setMnemonic('G');
-
-        JMenuItem menuItem = new JMenuItem(langBundle.getString("exit"));
-        menuItem.setName("exit");
-        menuItem.setAccelerator(KeyStroke.getKeyStroke("ctrl Q"));
-        menuItem.addActionListener(actionEvent -> System.exit(0));
-        menu.add(menuItem);
-        menuBar.add(menu);
-
-        menu = new JMenu(langBundle.getString("levels"));
-        menu.setName("levels");
-        menu.setMnemonic('L');
-
-        ButtonGroup group = new ButtonGroup();
-        int i = 0;
-        for (String level:board.getLevelNames()) {
-            if (i > 0) {
-                menuItem = new JRadioButtonMenuItem(level);
-                menuItem.addActionListener(event -> setLevel(Integer.parseInt(event.getActionCommand())));
-                menuItem.setActionCommand(String.valueOf(i));
-                group.add(menuItem);
-                menu.add(menuItem);
-            }
-            i++;
-        }
-        menuBar.add(menu);
-
-        menu = new JMenu(langBundle.getString("settings"));
-        menu.setName("settings");
-        menu.setMnemonic('S');
-        menuItem = new JMenu(langBundle.getString("language"));
-        menuItem.setName("language");
-        for (String s:langBundle.getLanguages()){
-            JMenuItem subItem = new JMenuItem(langBundle.getString(s));
-            subItem.setName(s);
-            subItem.setActionCommand(s);
-            subItem.addActionListener(event -> languageChanged(event.getActionCommand()));
-            menuItem.add(subItem);
-        }
-        menu.add(menuItem);
-
-        menuItem = new JMenu(langBundle.getString("theme"));
-        menuItem.setName("theme");
-        for (PainterTheme t: PainterTheme.values()) {
-            JMenuItem subItem = new JMenuItem(t.getThemeName());
-            subItem.setActionCommand(t.name());
-            subItem.addActionListener(event -> themeChanged(event.getActionCommand()));
-            menuItem.add(subItem);
-        }
-        menu.add(menuItem);
-
-        menuBar.add(menu);
-
-        return menuBar;
-    }
-
     private void themeChanged(String name){
+        this.mainMenu.selectThemeItem(name);
         PainterTheme.forEachPainterCollections(item -> item.selectPainter(PainterTheme.valueOf(name)));
-        board.repaint();
+        this.prefs.put("theme", name);
+        this.board.repaint();
     }
 
     private void languageChanged(String lang) {
@@ -164,22 +112,23 @@ public class KlotskiForm {
         }
         if ( !langBundle.setLocale(lang))
             return;
+        this.prefs.put("language",lang);
         Helper helper = new Helper();
         helper.traverse(frame);
+        this.mainMenu.selectLanguageItem(lang);
     }
 
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        }
-        catch (Exception e) {
-            System.err.println("No system specific look&fell. Using default.");
+            } catch (Exception e) {
+                System.err.println("No system specific look&fell. Using default.");
         }
         frame = new JFrame("Klotski");
         KlotskiForm form = new KlotskiForm();
         frame.setContentPane(form.boardPanel);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setJMenuBar(form.createMenu());
+        frame.setJMenuBar(form.mainMenu.getMenuBar());
         frame.pack();
         try {
             URL icon = frame.getClass().getResource("/img/icon.png");
@@ -188,7 +137,119 @@ public class KlotskiForm {
         } catch (IOException e) {
             System.err.println("No application icon found");
         }
+        form.loadPrefs();
         frame.setVisible(true);
+    }
+
+    class MainMenu {
+        private JMenuBar menuBar = new JMenuBar();
+        private MenuGroup levelMenuGroup = new MenuGroup();
+        private MenuGroup themeMenuGroup = new MenuGroup();
+        private MenuGroup languageMenuGroup = new MenuGroup();
+
+        public MainMenu(List<String> levels) {
+            this.menuBar.add(createGameMenu());
+            this.menuBar.add(createLevelMenu(levels));
+            this.menuBar.add(createSettingsMenu());
+        }
+
+        public void selectLevelItem(int level) {
+            this.levelMenuGroup.selectItem(level - 1);
+        }
+
+        public void selectThemeItem(String name) {
+            this.themeMenuGroup.selectItem(name);
+        }
+
+        public void selectLanguageItem(String name) {
+            this.languageMenuGroup.selectItem(name);
+        }
+
+        public JMenuBar getMenuBar() {
+            return this.menuBar;
+        }
+
+        private JMenu createGameMenu() {
+            JMenu menu = new JMenu(langBundle.getString("game"));
+            menu.setName("game");
+            menu.setMnemonic('G');
+
+            JMenuItem menuItem = new JMenuItem(langBundle.getString("exit"));
+            menuItem.setName("exit");
+            menuItem.setAccelerator(KeyStroke.getKeyStroke("ctrl Q"));
+            menuItem.addActionListener(actionEvent -> System.exit(0));
+            menu.add(menuItem);
+            return menu;
+        }
+
+        private JMenu createLevelMenu(List<String> levels) {
+            JMenu menu = new JMenu(langBundle.getString("levels"));
+            menu.setName("levels");
+            menu.setMnemonic('L');
+
+
+            int i = 0;
+            for (String level : levels) {
+                if (i > 0) {
+                    JMenuItem menuItem = new JRadioButtonMenuItem(level);
+                    menuItem.addActionListener(event -> setLevel(Integer.parseInt(event.getActionCommand())));
+                    menuItem.setActionCommand(String.valueOf(i));
+                    this.levelMenuGroup.add(menuItem);
+                    menu.add(menuItem);
+                }
+                i++;
+            }
+            return menu;
+        }
+
+        private JMenu createSettingsMenu() {
+            JMenu menu = new JMenu(langBundle.getString("settings"));
+            menu.setName("settings");
+            menu.setMnemonic('S');
+            JMenuItem menuItem = new JMenu(langBundle.getString("language"));
+            menuItem.setName("language");
+            for (String s : langBundle.getLanguages()) {
+                JMenuItem subItem = new JRadioButtonMenuItem(langBundle.getString(s));
+                subItem.setName(s);
+                subItem.setActionCommand(s);
+                subItem.addActionListener(event -> languageChanged(event.getActionCommand()));
+                menuItem.add(subItem);
+                this.languageMenuGroup.add(subItem);
+            }
+            menu.add(menuItem);
+
+            menuItem = new JMenu(langBundle.getString("theme"));
+            menuItem.setName("theme");
+
+            for (PainterTheme t : PainterTheme.values()) {
+                JMenuItem subItem = new JRadioButtonMenuItem(t.getThemeName());
+                subItem.setName(t.name());
+                subItem.setActionCommand(t.name());
+                subItem.addActionListener(event -> themeChanged(event.getActionCommand()));
+                menuItem.add(subItem);
+                this.themeMenuGroup.add(subItem);
+            }
+            menu.add(menuItem);
+            return menu;
+        }
+
+        class MenuGroup extends ButtonGroup {
+
+            public void selectItem(int index) {
+                this.buttons.stream()
+                        .skip(index)
+                        .findFirst()
+                        .ifPresent(x -> x.setSelected(true));
+            }
+
+            public void selectItem(String name){
+                this.buttons.stream()
+                        .filter(b -> name.equals(b.getName()))
+                        .findFirst()
+                        .ifPresent(x -> x.setSelected(true));
+            }
+
+        }
     }
 
     class Languages {
@@ -204,20 +265,19 @@ public class KlotskiForm {
 
         public Languages() {
             Locale locale;
-            for(String[] l:locales) {
+            for(String[] l: this.locales) {
                 locale = new Locale(l[0],l[1]);
                 try {
-                    ResourceBundle bundle = ResourceBundle.getBundle(bundlePath,locale);
+                    ResourceBundle bundle = ResourceBundle.getBundle(this.bundlePath,locale);
                     if (bundle.getLocale().getLanguage().equals(locale.getLanguage()))
-                        translations.add(l);
+                        this.translations.add(l);
                     else
                         System.err.println("No locale found"+l[2]);
-                } catch (MissingResourceException e) {
-                    continue;
+                    } catch (MissingResourceException ignore) {
                 }
             }
             Locale defaultLocale = Locale.getDefault();
-            System.err.println(defaultLocale);
+            //System.err.println(defaultLocale);
             if (!setLocale(defaultLocale.getCountry(),defaultLocale.getLanguage()))
                 setLocale(0);
         }
@@ -231,8 +291,8 @@ public class KlotskiForm {
         }
 
         public boolean setLocale(Predicate<String[]> predicate){
-            for (int i=0; i<translations.size();i++) {
-                String[] lang = translations.get(i);
+            for (int i=0; i< this.translations.size();i++) {
+                String[] lang = this.translations.get(i);
                 if (predicate.test(lang)) {
                     return setLocale(i);
                 }
@@ -241,21 +301,30 @@ public class KlotskiForm {
         }
 
         public boolean setLocale(int index) {
-            if (index >= 0 && index < translations.size()) {
-                String[] t = translations.get(index);
+            if (index >= 0 && index < this.translations.size()) {
+                String[] t = this.translations.get(index);
                 Locale locale = new Locale(t[0],t[1]);
-                currentLangBundle = ResourceBundle.getBundle(bundlePath,locale);
+                this.currentLangBundle = ResourceBundle.getBundle(this.bundlePath,locale);
                 return true;
             }
             return false;
         }
 
         public String[] getLanguages() {
-            return translations.stream().map(x -> x[2]).toArray(String[]::new);
+            return this.translations.stream().map(x -> x[2]).toArray(String[]::new);
+        }
+
+        public String getDefaultLanguage() {
+            Locale defaultLocale = Locale.getDefault();
+            return this.translations.stream()
+                    .filter(t -> defaultLocale.getCountry().equals(t[1]) && defaultLocale.getLanguage().equals(t[0]))
+                    .map(x -> x[2])
+                    .findFirst().orElse(this.locales[0][2]);
+
         }
 
         public String getString(String key) {
-            return currentLangBundle.getString(key);
+            return this.currentLangBundle.getString(key);
         }
     }
 }

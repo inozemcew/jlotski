@@ -58,7 +58,7 @@
             <properties>
               <horizontalTextPosition value="2"/>
               <name value="cellsize"/>
-              <text resource-bundle="i18n" key="cellsize"/>
+              <text resource-bundle="i18n/i18n" key="cellsize"/>
             </properties>
           </component>
           <component id="b71bc" class="javax.swing.JSlider" binding="slider1" default-binding="true">
@@ -66,7 +66,7 @@
             <properties>
               <inverted value="false"/>
               <majorTickSpacing value="20"/>
-              <maximum value="64"/>
+              <maximum value="80"/>
               <maximumSize width="128" height="45"/>
               <minimum value="4"/>
               <minimumSize width="64" height="45"/>
@@ -75,7 +75,7 @@
               <paintLabels value="false"/>
               <paintTicks value="true"/>
               <preferredSize width="45" height="45"/>
-              <value value="32"/>
+              <value value="48"/>
             </properties>
           </component>
         </children>

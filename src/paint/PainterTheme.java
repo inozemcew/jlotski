@@ -12,16 +12,16 @@ public enum PainterTheme {
     Image("Textured");
 
     final String themeName;
+    private static final ArrayList<CellPainterCollection> painters = new ArrayList<>();
 
     PainterTheme(String themeName){
         this.themeName = themeName;
     }
 
     public String getThemeName() {
-        return themeName;
+        return this.themeName;
     }
 
-    private static final ArrayList<CellPainterCollection> painters = new ArrayList<>();
 
     public static void registerPainterCollection(CellPainterCollection collection) {
         if (!PainterTheme.painters.contains(collection))
