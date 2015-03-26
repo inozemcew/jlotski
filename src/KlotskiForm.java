@@ -27,16 +27,16 @@ public class KlotskiForm {
     private JSlider slider1;
 
     final MainMenu mainMenu;
-    private Board board;
+    private final Board board;
     private static JFrame frame;
 
     static Languages langBundle;
-    private Preferences prefs = Preferences.userNodeForPackage(KlotskiForm.class);
+    private final Preferences prefs = Preferences.userNodeForPackage(KlotskiForm.class);
 
     public KlotskiForm() {
         langBundle = new Languages();
         this.board = new Board();
-        this.mainMenu = new MainMenu(this.board.getLevelNames());
+        this.mainMenu = new MainMenu(this.board.getLevelNames(), langBundle.getLanguages(), PainterTheme.values());
         this.boardPanel.add(this.board);
         this.exitButton.addActionListener(e -> System.exit(0));
         this.resetButton.addActionListener(e -> setLevel(this.board.getCurrentLevelNumber()));
@@ -142,15 +142,15 @@ public class KlotskiForm {
     }
 
     class MainMenu {
-        private JMenuBar menuBar = new JMenuBar();
-        private MenuGroup levelMenuGroup = new MenuGroup();
-        private MenuGroup themeMenuGroup = new MenuGroup();
-        private MenuGroup languageMenuGroup = new MenuGroup();
+        private final JMenuBar menuBar = new JMenuBar();
+        private final MenuGroup levelMenuGroup = new MenuGroup();
+        private final MenuGroup themeMenuGroup = new MenuGroup();
+        private final MenuGroup languageMenuGroup = new MenuGroup();
 
-        public MainMenu(List<String> levels) {
+        public MainMenu(List<String> levels, String[] languages, PainterTheme[] painterThemes) {
             this.menuBar.add(createGameMenu());
             this.menuBar.add(createLevelMenu(levels));
-            this.menuBar.add(createSettingsMenu());
+            this.menuBar.add(createSettingsMenu(languages, painterThemes));
         }
 
         public void selectLevelItem(int level) {
@@ -187,28 +187,23 @@ public class KlotskiForm {
             menu.setName("levels");
             menu.setMnemonic('L');
 
-
-            int i = 0;
-            for (String level : levels) {
-                if (i > 0) {
-                    JMenuItem menuItem = new JRadioButtonMenuItem(level);
-                    menuItem.addActionListener(event -> setLevel(Integer.parseInt(event.getActionCommand())));
-                    menuItem.setActionCommand(String.valueOf(i));
-                    this.levelMenuGroup.add(menuItem);
-                    menu.add(menuItem);
-                }
-                i++;
+            for (int i = 1; i<levels.size(); i++) {
+                JMenuItem menuItem = new JRadioButtonMenuItem(levels.get(i));
+                menuItem.addActionListener(event -> setLevel(Integer.parseInt(event.getActionCommand())));
+                menuItem.setActionCommand(String.valueOf(i));
+                this.levelMenuGroup.add(menuItem);
+                menu.add(menuItem);
             }
             return menu;
         }
 
-        private JMenu createSettingsMenu() {
+        private JMenu createSettingsMenu(String[] languages, PainterTheme[] painterThemes) {
             JMenu menu = new JMenu(langBundle.getString("settings"));
             menu.setName("settings");
             menu.setMnemonic('S');
             JMenuItem menuItem = new JMenu(langBundle.getString("language"));
             menuItem.setName("language");
-            for (String s : langBundle.getLanguages()) {
+            for (String s : languages) {
                 JMenuItem subItem = new JRadioButtonMenuItem(langBundle.getString(s));
                 subItem.setName(s);
                 subItem.setActionCommand(s);
@@ -221,7 +216,7 @@ public class KlotskiForm {
             menuItem = new JMenu(langBundle.getString("theme"));
             menuItem.setName("theme");
 
-            for (PainterTheme t : PainterTheme.values()) {
+            for (PainterTheme t : painterThemes) {
                 JMenuItem subItem = new JRadioButtonMenuItem(t.getThemeName());
                 subItem.setName(t.name());
                 subItem.setActionCommand(t.name());
@@ -252,48 +247,61 @@ public class KlotskiForm {
         }
     }
 
+    enum Locales {
+        English("en", "US"),
+        French("fr","FR"),
+        Russian("ru","RU"),
+        Ukrainian("ua","UA");
+
+        private String lang, country;
+
+        Locales(String lang, String country) {
+            this.lang = lang;
+            this.country = country;
+        }
+
+        public String getLang() {
+            return this.lang;
+        }
+
+        public String getCountry() {
+            return this.country;
+        }
+    }
+
     class Languages {
-        private final String[][] locales = {
-                {"en","US","english"},
-                {"fr","FR","french"},
-                {"ru","RU","russian"},
-                {"ua","UA","ukrainian"}
-        };
         private final String bundlePath = "i18n/i18n";
         private ResourceBundle currentLangBundle;
-        private final Vector<String[]> translations = new Vector<>();
+        private final Vector<Locales> translations = new Vector<>();
 
         public Languages() {
-            Locale locale;
-            for(String[] l: this.locales) {
-                locale = new Locale(l[0],l[1]);
+            for(Locales l: KlotskiForm.Locales.values()) {
+                Locale locale = new Locale(l.getLang(),l.getCountry());
                 try {
                     ResourceBundle bundle = ResourceBundle.getBundle(this.bundlePath,locale);
                     if (bundle.getLocale().getLanguage().equals(locale.getLanguage()))
                         this.translations.add(l);
                     else
-                        System.err.println("No locale found"+l[2]);
+                        System.err.println("No locale found "+l.name());
                     } catch (MissingResourceException ignore) {
                 }
             }
             Locale defaultLocale = Locale.getDefault();
-            //System.err.println(defaultLocale);
             if (!setLocale(defaultLocale.getCountry(),defaultLocale.getLanguage()))
                 setLocale(0);
         }
 
         public boolean setLocale(String country, String language) {
-            return setLocale(t -> country.equals(t[1]) && language.equals(t[0]));
+            return setLocale(t -> country.equals(t.getCountry()) && language.equals(t.getLang()));
         }
 
         public boolean setLocale(String name) {
-            return setLocale(x -> name.equals(x[2]) );
+            return setLocale(x -> name.equals(x.name()) );
         }
 
-        public boolean setLocale(Predicate<String[]> predicate){
-            for (int i=0; i< this.translations.size();i++) {
-                String[] lang = this.translations.get(i);
-                if (predicate.test(lang)) {
+        public boolean setLocale(Predicate<Locales> predicate){
+            for (int i = 0; i < this.translations.size(); i++) {
+                if (predicate.test(this.translations.get(i))) {
                     return setLocale(i);
                 }
             }
@@ -302,8 +310,8 @@ public class KlotskiForm {
 
         public boolean setLocale(int index) {
             if (index >= 0 && index < this.translations.size()) {
-                String[] t = this.translations.get(index);
-                Locale locale = new Locale(t[0],t[1]);
+                Locales t = this.translations.get(index);
+                Locale locale = new Locale(t.getLang(),t.getCountry());
                 this.currentLangBundle = ResourceBundle.getBundle(this.bundlePath,locale);
                 return true;
             }
@@ -311,16 +319,16 @@ public class KlotskiForm {
         }
 
         public String[] getLanguages() {
-            return this.translations.stream().map(x -> x[2]).toArray(String[]::new);
+            return this.translations.stream().map(Enum::name).toArray(String[]::new);
         }
 
         public String getDefaultLanguage() {
             Locale defaultLocale = Locale.getDefault();
             return this.translations.stream()
-                    .filter(t -> defaultLocale.getCountry().equals(t[1]) && defaultLocale.getLanguage().equals(t[0]))
-                    .map(x -> x[2])
-                    .findFirst().orElse(this.locales[0][2]);
-
+                    .filter(t -> defaultLocale.getCountry().equals(t.getCountry())
+                            && defaultLocale.getLanguage().equals(t.getLang()))
+                    .map(Enum::name)
+                    .findFirst().orElse(Locales.English.name());
         }
 
         public String getString(String key) {
