@@ -160,11 +160,11 @@ abstract class Piece {
     }
 
     boolean isXAligned() {
-        return (x % Cell.CELLSIZE == 0);
+        return (this.x % Cell.CELLSIZE == 0);
     }
 
     boolean isYAligned() {
-        return (y %Cell.CELLSIZE == 0);
+        return (this.y %Cell.CELLSIZE == 0);
     }
 
     /**
@@ -179,7 +179,7 @@ abstract class Piece {
      */
     Collection<Piece> findPushedPieces(int dx, int dy, Collection<Piece> pieces) {
         Collection<Piece> result = new HashSet<>();
-        if (!isPieceInside(dx, dy, new Rectangle(level.getLevelSize())))
+        if (!isPieceInside(dx, dy, new Rectangle(this.level.getLevelSize())))
             return result;
         List<Piece> ps = new ArrayList<>(pieces);
         ps.remove(this);
@@ -209,7 +209,7 @@ abstract class Piece {
     }
 
     public Point getDragPoint() {
-        return new Point(dragPoint);
+        return new Point(this.dragPoint);
     }
 
     void setDragPoint(Point dragPoint) {
@@ -221,7 +221,7 @@ abstract class Piece {
     }
 
     void moveDragPoint(int dx, int dy) {
-        dragPoint.translate(dx, dy);
+        this.dragPoint.translate(dx, dy);
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -234,13 +234,13 @@ abstract class Piece {
         class Helper {
             final int c = Cell.CELLSIZE;
             int least(int dz, int z){
-                if (z%c == 0) {
-                    if (dz > 0) return min(c, dz);
-                    else return max(-c, dz);
+                if (z% this.c == 0) {
+                    if (dz > 0) return min(this.c, dz);
+                    else return max(-this.c, dz);
                 } else {
                     int zz = Math.abs(z);
-                    if (dz > 0) return min(c - (zz % c), dz);
-                    else return max(-zz % c, dz);
+                    if (dz > 0) return min(this.c - (zz % this.c), dz);
+                    else return max(-zz % this.c, dz);
                 }
             }
         }

@@ -22,14 +22,14 @@ public class MoveRecord {
 
         MoveRecord that = (MoveRecord) o;
 
-        return (this.x == that.x) && (this.y == that.y) && (piece == that.piece);
+        return (this.x == that.x) && (this.y == that.y) && (this.piece == that.piece);
     }
 
     @Override
     public int hashCode() {
-        int result = x;
-        result = 31 * result + y;
-        result = 31 * result + piece.hashCode();
+        int result = this.x;
+        result = 31 * result + this.y;
+        result = 31 * result + this.piece.hashCode();
         return result;
     }
 

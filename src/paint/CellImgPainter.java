@@ -33,9 +33,9 @@ public class CellImgPainter extends AbstractCellPainter {
 
     public CellImgPainter(String fileName) {
         try {
-            image = ImageIO.read(getClass().getResource(fileName));
-            sx = image.getWidth() / 6;
-            sy = image.getHeight() /6;
+            this.image = ImageIO.read(getClass().getResource(fileName));
+            this.sx = this.image.getWidth() / 6;
+            this.sy = this.image.getHeight() /6;
         } catch (IOException e) {
             System.err.printf("No image file %s found", fileName);
             System.exit(1);
@@ -52,7 +52,9 @@ public class CellImgPainter extends AbstractCellPainter {
             case None:          { px = array[3][0]; py = array[3][1]; } break;
             case Inner:         { px = array[4][0]; py = array[4][1]; } break;
         }
-        g.drawImage(image, x, y, x+w, y+h, px*sx, py*sy, (px+1)*sx-1,(py+1)*sy-1,null);
+        this.g.drawImage(this.image, x, y, x + this.w, y + this.h,
+                px * this.sx, py * this.sy, (px + 1) * this.sx - 1, (py + 1) * this.sy - 1,
+                null);
     }
 
     @Override
@@ -68,24 +70,24 @@ public class CellImgPainter extends AbstractCellPainter {
     @Override
     protected void drawNW(CornerType type) {
         int array[][] = {{0, 0}, {2, 0}, {0, 2}, {4, 4}, {3, 3}};
-        drawCorner(x, y, type, array);
+        drawCorner(this.x, this.y, type, array);
     }
 
     @Override
     protected void drawNE(CornerType type) {
         int array[][] = {{5, 0}, {1, 0}, {5, 4}, {1, 2}, {2, 3}};
-        drawCorner(x + w, y, type, array);
+        drawCorner(this.x + this.w, this.y, type, array);
     }
 
     @Override
     protected void drawSW(CornerType type) {
         int array[][] = {{0, 5}, {2, 5}, {0, 1}, {1, 4}, {3, 2}};
-        drawCorner(x, y + h, type, array);
+        drawCorner(this.x, this.y + this.h, type, array);
     }
 
     @Override
     protected void drawSE(CornerType type) {
         int array[][] = {{5, 5}, {1, 5}, {5, 1}, {1, 1}, {2, 2}};
-        drawCorner(x + w, y + h, type, array);
+        drawCorner(this.x + this.w, this.y + this.h, type, array);
     }
 }

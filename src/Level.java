@@ -130,8 +130,7 @@ public class Level {
 
     public boolean loadLevel(BufferedReader r) {
         String s;
-        int x=0;
-        int y=0;
+        int x=0, y=0;
         try {
             do {
                 s = r.readLine();
@@ -170,15 +169,26 @@ public class Level {
         createFigures('.','.',Target::new);
     }
 
-    private <P extends Piece> void createFigures(char f, char t, Supplier<P> F) {
-        List<StringBuilder> d = new ArrayList<>();
-        this.data.forEach(s -> d.add(new StringBuilder(s)));
-        for (char c = f; c <= t; c++) {
+    private Supplier<? extends Piece> newFigure(char c){
+        if (c >= 'A' && c<='Z') return Figure::new;
+        if (c >= 'a' && c<='z') return Figure::new;
+        if (c >= '0' && c<='9') return Figure::new;
+        if (c == '*') return MainFigure::new;
+        if (c == '#') return Wall::new;
+        if (c == '-') return Gate::new;
+        if (c == '.') return Target::new;
+        return null;
+    }
+
+    private <P extends Piece> void createFigures(char from, char to, Supplier<P> supplier) {
+        List<StringBuilder> tmpData = new ArrayList<>();
+        this.data.forEach(s -> tmpData.add(new StringBuilder(s)));
+        for (char c = from; c <= to; c++) {
             boolean loaded;
             do {
-                P fig = F.get();
+                P fig = supplier.get();
                 fig.setLevel(this);
-                loaded = fig.loadCells(d, c);
+                loaded = fig.loadCells(tmpData, c);
                 if (loaded) this.pieces.add(fig);
             } while (loaded);
         }
