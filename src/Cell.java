@@ -13,7 +13,7 @@ import java.awt.*;
 
 abstract class Cell {
     private static final CellPainter cellPainter = new CellDrawPainter();
-    public static int CELLSIZE = 48;
+    public static int CELLSIZE = 32;
 
     private int x,y;            //block coordinates
     private final Piece parent;

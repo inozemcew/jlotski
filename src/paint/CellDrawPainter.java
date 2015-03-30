@@ -36,14 +36,14 @@ public class CellDrawPainter extends AbstractCellPainter {
         g.setColor(frameColor);
         switch (type) {
             case Horizontal:
-                H(x, x + w, y, y + b, 0, 0, false);
+                H(x, x + w2, y, y + b, 0, 0, false);
                 break;
             case Vertical:
-                V(x, x + b, y, y + h, 0, 0, false);
+                V(x, x + b, y, y + h2, 0, 0, false);
                 break;
             case Both:
-                H(x, x + w, y, y + b, 1, 0, false);
-                V(x, x + b, y, y + h, 1, 0, false);
+                H(x, x + w2, y, y + b, 1, 0, false);
+                V(x, x + b, y, y + h2, 1, 0, false);
                 break;
             case Inner:
                 H(x, x, y, y + b, 0, 1, false);
@@ -58,14 +58,14 @@ public class CellDrawPainter extends AbstractCellPainter {
         g.setColor(frameColor);
         switch (type) {
             case Horizontal:
-                H(xw-w, xw, y, y+b, 0, 0,false);
+                H(xw- w2, xw, y, y+b, 0, 0,false);
                 break;
             case Vertical:
-                V(xw-b, xw, y, y+h, 0, 0);
+                V(xw-b, xw, y, y+ h2, 0, 0);
                 break;
             case Both:
-                H(xw-w, xw, y, y+b, 0, -1,false);
-                V(xw-b, xw, y+b , y+h, -1, 0);
+                H(xw- w2, xw, y, y+b, 0, -1,false);
+                V(xw-b, xw, y+b , y+ h2, -1, 0);
                 break;
             case Inner:
                 V(xw-b, xw, y, y+b, 0, -1);
@@ -80,14 +80,14 @@ public class CellDrawPainter extends AbstractCellPainter {
         g.setColor(frameColor);
         switch (type) {
             case Horizontal:
-                H(x, x + w, yh - b, yh, 0, 0);
+                H(x, x + w2, yh - b, yh, 0, 0);
                 break;
             case Vertical:
-                V(x, x + b, yh-h, yh, 0, 0, false);
+                V(x, x + b, yh- h2, yh, 0, 0, false);
                 break;
             case Both:
-                H(x+b, x + w, yh - b, yh, -1, 0);
-                V(x, x + b, yh-h, yh, 0, -1, false);
+                H(x+b, x + w2, yh - b, yh, -1, 0);
+                V(x, x + b, yh- h2, yh, 0, -1, false);
                 break;
             case Inner:
                 H(x, x + b, yh - b, yh, 0, -1);
@@ -102,14 +102,14 @@ public class CellDrawPainter extends AbstractCellPainter {
         g.setColor(frameColor);
         switch (type) {
             case Horizontal:
-                H(xw-w, xw, yh - b, yh, 0, 0);
+                H(xw- w2, xw, yh - b, yh, 0, 0);
                 break;
             case Vertical:
-                V(xw-b, xw, yh - h, yh, 0, 0);
+                V(xw-b, xw, yh - h2, yh, 0, 0);
                 break;
             case Both:
-                H(xw-h, xw-b, yh - b, yh, 0, 1);
-                V(xw-b, xw, yh-h, yh-b, 0, 1);
+                H(xw- h2, xw-b, yh - b, yh, 0, 1);
+                V(xw-b, xw, yh- h2, yh-b, 0, 1);
                 break;
             case Inner:
                 H(xw-b, xw, yh - b, yh, 1, 0);

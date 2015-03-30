@@ -88,10 +88,10 @@ class GateCell extends Cell{
     }
 
 //    @Override
-//    protected void doPaint(int x, int y, int w, int h, Graphics g) {
+//    protected void doPaint(int x, int y, int w2, int h2, Graphics g) {
 //        g.setColor(Color.blue);
-//        g.draw3DRect(x + w / 3, y + h / 3, w / 3, h / 3, true);
-//        g.draw3DRect(x + w/3+1, y + h/3+1, w/3-2, h/3-2 , false);
+//        g.draw3DRect(x + w2 / 3, y + h2 / 3, w2 / 3, h2 / 3, true);
+//        g.draw3DRect(x + w2/3+1, y + h2/3+1, w2/3-2, h2/3-2 , false);
 //    }
 }
 

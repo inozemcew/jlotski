@@ -7,18 +7,22 @@ import java.awt.*;
  */
 
 public abstract class AbstractCellPainter implements CellPainter {
-    protected Graphics g;
-    protected int x, y, w, h, xw, yh;
+    protected Graphics2D g;
+    protected int x, y, w, h, w1, h1, w2, h2, xw, yh;
 
     @Override
     public void setContext(Graphics g, int x, int y, int w, int h) {
-        this.g = g;
+        this.g = (Graphics2D)g;
         this.x = x;
         this.y = y;
         this.xw = x+w;
         this.yh = y+h;
-        this.w = (w+1)/2;
-        this.h = (h+1)/2;
+//        this.w = w;
+//        this.h = h;
+        this.w1 = (w+1)/2;
+        this.h1 = (h+1)/2;
+        this.w2 = w/2;
+        this.h2 = h/2;
     }
 
     abstract protected void drawFG();

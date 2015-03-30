@@ -14,8 +14,8 @@ public class GateCellDrawPainter extends AbstractCellPainter{
     @Override
     protected void drawBG() {
         g.setColor(Color.blue);
-        int w = this.w*2/3;
-        int h = this.h*2/3;
+        int w = this.w2 *2/3;
+        int h = this.h2 *2/3;
         g.draw3DRect(x+w ,  y+h,   w , h , true);
         g.draw3DRect(x+w+1, y+h+1, w-2, h-2 , false);
     }

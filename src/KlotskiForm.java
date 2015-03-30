@@ -121,6 +121,9 @@ public class KlotskiForm {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.LookAndFeelInfo[] f = UIManager.getInstalledLookAndFeels();
+            for(UIManager.LookAndFeelInfo i:f) System.err.println(i.getClassName());
+            //UIManager.setLookAndFeel("joxy.JoxyLookAndFeel");
             } catch (Exception e) {
                 System.err.println("No system specific look&fell. Using default.");
         }

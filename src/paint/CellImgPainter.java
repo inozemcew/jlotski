@@ -3,6 +3,7 @@ package paint;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * <p>paint.CellImgPainter a descendant of paint.AbstractCellPainter paints cell of piece using an external image.</p>
@@ -30,7 +31,14 @@ import java.io.IOException;
 public class CellImgPainter extends AbstractCellPainter {
     private BufferedImage image = null;
     private int sx,sy;
+    private HashMap<CornerType,BufferedImage> nwImages, neImages, swImages, seImages;
 
+    static int[][] nw = {{0, 0}, {2, 0}, {0, 2}, {4, 4}, {3, 3}}; //0,12,2,28,21
+    static int[][] ne = {{5, 0}, {1, 0}, {5, 4}, {1, 2}, {2, 3}}; //30,6,34,8,15
+    static int[][] sw = {{0, 5}, {2, 5}, {0, 1}, {1, 4}, {3, 2}}; //5,17,1,10,20
+    static int[][] se = {{5, 5}, {1, 5}, {5, 1}, {1, 1}, {2, 2}}; //35,11,31,7,14
+    // 0,1,2,5,6,7,8,10,11,12,14,15,17,20,21,28,30,31,34,35
+    // 3,4,9,13,16,18,19,22-27,29,32,33
     public CellImgPainter(String fileName) {
         try {
             this.image = ImageIO.read(getClass().getResource(fileName));
@@ -40,9 +48,24 @@ public class CellImgPainter extends AbstractCellPainter {
             System.err.printf("No image file %s found", fileName);
             System.exit(1);
         }
+        int l = CornerType.values().length;
+        this.nwImages = new HashMap<>(l);
+        this.neImages = new HashMap<>(l);
+        this.swImages = new HashMap<>(l);
+        this.seImages = new HashMap<>(l);
+        for (CornerType i : CornerType.values()){
+            this.nwImages.put(i, cutFromImage(i, nw));
+            this.neImages.put(i, cutFromImage(i, ne));
+            this.swImages.put(i, cutFromImage(i, sw));
+            this.seImages.put(i, cutFromImage(i, se));
+        }
     }
 
-    private void drawCorner(int x, int y, CornerType type, int [][] array) {
+    private void drawCorner(int x, int y, int w, int h, CornerType type, HashMap<CornerType,BufferedImage> img) {
+        this.g.drawImage(img.get(type), x, y, w, h, null);
+    }
+
+    private BufferedImage cutFromImage(CornerType type, int [][] array) {
         int px=0;
         int py=0;
         switch (type) {
@@ -52,9 +75,8 @@ public class CellImgPainter extends AbstractCellPainter {
             case None:          { px = array[3][0]; py = array[3][1]; } break;
             case Inner:         { px = array[4][0]; py = array[4][1]; } break;
         }
-        this.g.drawImage(this.image, x, y, x + this.w, y + this.h,
-                px * this.sx, py * this.sy, (px + 1) * this.sx - 1, (py + 1) * this.sy - 1,
-                null);
+        return this.image.getSubimage(
+                px * this.sx, py * this.sy, this.sx, this.sy);
     }
 
     @Override
@@ -69,25 +91,21 @@ public class CellImgPainter extends AbstractCellPainter {
 
     @Override
     protected void drawNW(CornerType type) {
-        int array[][] = {{0, 0}, {2, 0}, {0, 2}, {4, 4}, {3, 3}};
-        drawCorner(this.x, this.y, type, array);
+        drawCorner(this.x, this.y, this.w1, this.h1, type, this.nwImages);
     }
 
     @Override
     protected void drawNE(CornerType type) {
-        int array[][] = {{5, 0}, {1, 0}, {5, 4}, {1, 2}, {2, 3}};
-        drawCorner(this.x + this.w, this.y, type, array);
+        drawCorner(this.x + this.w1, this.y, this.w2, this.h1, type, this.neImages);
     }
 
     @Override
     protected void drawSW(CornerType type) {
-        int array[][] = {{0, 5}, {2, 5}, {0, 1}, {1, 4}, {3, 2}};
-        drawCorner(this.x, this.y + this.h, type, array);
+        drawCorner(this.x, this.y + this.h1, this.w1, this.h2, type, this.swImages);
     }
 
     @Override
     protected void drawSE(CornerType type) {
-        int array[][] = {{5, 5}, {1, 5}, {5, 1}, {1, 1}, {2, 2}};
-        drawCorner(this.x + this.w, this.y + this.h, type, array);
+        drawCorner(this.x + this.w1, this.y + this.h1, this.w2, this.h2, type, this.seImages);
     }
 }
