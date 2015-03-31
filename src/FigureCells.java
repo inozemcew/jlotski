@@ -6,7 +6,7 @@ class FigureCell extends Cell{
     static final CellPainterCollection painterCollection = new CellPainterCollection();
     static {
         painterCollection.addPainter(PainterTheme.Draw,new CellDrawPainter());
-        painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/green1.png"));
+        painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/green2.png"));
         PainterTheme.registerPainterCollection(painterCollection);
     }
 
@@ -24,7 +24,7 @@ class MainFigureCell extends FigureCell {
     static final CellPainterCollection painterCollection = new CellPainterCollection();
     static {
         painterCollection.addPainter(PainterTheme.Draw,new CellDrawPainter(Color.red));
-        painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/red1.png"));
+        painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/red2.png"));
         PainterTheme.registerPainterCollection(painterCollection);
     }
 
@@ -50,7 +50,7 @@ class WallCell extends Cell{
     static final CellPainterCollection painterCollection = new CellPainterCollection();
     static {
         painterCollection.addPainter(PainterTheme.Draw, new CellDrawPainter(Color.cyan));
-        painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/blue1.png"));
+        painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/blue2.png"));
         PainterTheme.registerPainterCollection(painterCollection);
     }
 
@@ -74,7 +74,7 @@ class GateCell extends Cell{
     static final CellPainterCollection painterCollection = new CellPainterCollection();
     static {
         painterCollection.addPainter(PainterTheme.Draw, new GateCellDrawPainter());
-        painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/dark1.png"));
+        painterCollection.addPainter(PainterTheme.Image, new CellImgPainter("/img/dark2.png"));
         PainterTheme.registerPainterCollection(painterCollection);
     }
 

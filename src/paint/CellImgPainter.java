@@ -33,12 +33,11 @@ public class CellImgPainter extends AbstractCellPainter {
     private int sx,sy;
     private HashMap<CornerType,BufferedImage> nwImages, neImages, swImages, seImages;
 
-    static int[][] nw = {{0, 0}, {2, 0}, {0, 2}, {4, 4}, {3, 3}}; //0,12,2,28,21
-    static int[][] ne = {{5, 0}, {1, 0}, {5, 4}, {1, 2}, {2, 3}}; //30,6,34,8,15
-    static int[][] sw = {{0, 5}, {2, 5}, {0, 1}, {1, 4}, {3, 2}}; //5,17,1,10,20
-    static int[][] se = {{5, 5}, {1, 5}, {5, 1}, {1, 1}, {2, 2}}; //35,11,31,7,14
-    // 0,1,2,5,6,7,8,10,11,12,14,15,17,20,21,28,30,31,34,35
-    // 3,4,9,13,16,18,19,22-27,29,32,33
+    static int[][] nw = {{0, 0}, {4, 2}, {2, 4}, {2, 0}, {2, 2}};
+    static int[][] ne = {{1, 0}, {1, 2}, {3, 4}, {3, 0}, {3, 2}};
+    static int[][] sw = {{0, 1}, {4, 3}, {2, 1}, {2, 5}, {2, 3}};
+    static int[][] se = {{1, 1}, {1, 3}, {3, 1}, {3, 5}, {3, 3}};
+
     public CellImgPainter(String fileName) {
         try {
             this.image = ImageIO.read(getClass().getResource(fileName));
@@ -66,15 +65,8 @@ public class CellImgPainter extends AbstractCellPainter {
     }
 
     private BufferedImage cutFromImage(CornerType type, int [][] array) {
-        int px=0;
-        int py=0;
-        switch (type) {
-            case Both:          { px = array[0][0]; py = array[0][1]; } break;
-            case Horizontal:    { px = array[1][0]; py = array[1][1]; } break;
-            case Vertical:      { px = array[2][0]; py = array[2][1]; } break;
-            case None:          { px = array[3][0]; py = array[3][1]; } break;
-            case Inner:         { px = array[4][0]; py = array[4][1]; } break;
-        }
+        int px=array[type.ordinal()][0];
+        int py=array[type.ordinal()][1];
         return this.image.getSubimage(
                 px * this.sx, py * this.sy, this.sx, this.sy);
     }
