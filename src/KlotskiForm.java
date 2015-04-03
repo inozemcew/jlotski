@@ -3,6 +3,8 @@ import paint.PainterTheme;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -17,16 +19,17 @@ import java.util.prefs.Preferences;
  */
 public class KlotskiForm {
     private JPanel boardPanel;
-    private JButton exitButton;
-    private JButton resetButton;
     private JPanel statusPanel;
-    private JLabel welcomeLabel;
+    private JButton exitButton;
     private JButton backButton;
+    private JButton resetButton;
+    private JLabel welcomeLabel;
     private JLabel movesLabel;
     private JLabel levelNameLabel;
     private JSlider slider1;
 
-    final MainMenu mainMenu;
+    private final MainMenu mainMenu;
+    private final Listeners listeners;
     private final Board board;
     private static JFrame frame;
 
@@ -36,30 +39,19 @@ public class KlotskiForm {
     public KlotskiForm() {
         langBundle = new Languages();
         this.board = new Board();
+        this.listeners = new Listeners();
         this.mainMenu = new MainMenu(this.board.getLevelNames(), langBundle.getLanguages(), PainterTheme.values());
         this.boardPanel.add(this.board);
-        this.exitButton.addActionListener(e -> System.exit(0));
-        this.resetButton.addActionListener(e -> setLevel(this.board.getCurrentLevelNumber()));
-        this.board.setMoveListener(e -> this.movesLabel.setText(formatMovesMsg(e.getActionCommand())));
-        this.backButton.addActionListener(e -> undo());
-        this.slider1.addChangeListener(event -> changeCellSize());
+        this.exitButton.addActionListener(e -> this.listeners.actionExit());
+        this.resetButton.addActionListener(e -> this.listeners.actionReset());
+        this.board.setMoveListener(this.listeners::actionMove);
+        this.backButton.addActionListener(e -> this.listeners.actionUndo());
+        this.slider1.addChangeListener(event -> this.listeners.actionChangeCellSize());
     }
 
     private void loadPrefs() {
         themeChanged(this.prefs.get("theme", PainterTheme.values()[0].name()));
         languageChanged(this.prefs.get("language", langBundle.getDefaultLanguage()));
-    }
-
-    private void undo() {
-        this.board.currentLevel.undo();
-        this.movesLabel.setText(formatMovesMsg(Integer.toString(this.board.currentLevel.getMovesCount())));
-        frame.repaint();
-    }
-
-    private void changeCellSize() {
-        this.board.setCellSize(this.slider1.getValue());
-        this.board.updateBounds();
-        frame.pack();
     }
 
     private String formatMovesMsg(String count) {
@@ -144,6 +136,32 @@ public class KlotskiForm {
         frame.setVisible(true);
     }
 
+    class Listeners {
+        private void actionExit() {
+            System.exit(0);
+        }
+
+        private void actionReset() {
+            setLevel(KlotskiForm.this.board.getCurrentLevelNumber());
+        }
+
+        private void actionMove(ActionEvent e) {
+            KlotskiForm.this.movesLabel.setText(formatMovesMsg(e.getActionCommand()));
+        }
+
+        private void actionUndo() {
+            KlotskiForm.this.board.currentLevel.undo();
+            KlotskiForm.this.movesLabel.setText(formatMovesMsg(Integer.toString(KlotskiForm.this.board.currentLevel.getMovesCount())));
+            frame.repaint();
+        }
+
+        private void actionChangeCellSize() {
+            KlotskiForm.this.board.setCellSize(KlotskiForm.this.slider1.getValue());
+            KlotskiForm.this.board.updateBounds();
+            frame.pack();
+        }
+    }
+
     class MainMenu {
         private final JMenuBar menuBar = new JMenuBar();
         private final MenuGroup levelMenuGroup = new MenuGroup();
@@ -177,13 +195,15 @@ public class KlotskiForm {
             menu.setName("game");
             menu.setMnemonic('G');
 
-            JMenuItem menuItem = new JMenuItem(langBundle.getString("exit"));
-            menuItem.setName("exit");
-            menuItem.setAccelerator(KeyStroke.getKeyStroke("ctrl Q"));
-            menuItem.addActionListener(actionEvent -> System.exit(0));
-            menu.add(menuItem);
+            menu.add(createMenuItem("reset", "ctrl R", e -> KlotskiForm.this.listeners.actionReset()));
+            menu.add(createMenuItem("back", "ctrl Z", e -> KlotskiForm.this.listeners.actionUndo()));
+            menu.add(new JSeparator());
+            menu.add(createMenuItem("exit", "ctrl Q", actionEvent -> KlotskiForm.this.listeners.actionExit()));
+
+
             return menu;
         }
+
 
         private JMenu createLevelMenu(List<String> levels) {
             JMenu menu = new JMenu(langBundle.getString("levels"));
@@ -231,6 +251,14 @@ public class KlotskiForm {
             return menu;
         }
 
+        private JMenuItem createMenuItem(String name, String accelerator, ActionListener actionListener) {
+            JMenuItem menuItem = new JMenuItem(langBundle.getString(name));
+            menuItem.setName(name);
+            menuItem.setAccelerator(KeyStroke.getKeyStroke(accelerator));
+            menuItem.addActionListener(actionListener);
+            return menuItem;
+        }
+
         class MenuGroup extends ButtonGroup {
 
             public void selectItem(int index) {
@@ -256,7 +284,8 @@ public class KlotskiForm {
         Russian("ru","RU"),
         Ukrainian("ua","UA");
 
-        private String lang, country;
+        private final String lang;
+        private final String country;
 
         Locales(String lang, String country) {
             this.lang = lang;

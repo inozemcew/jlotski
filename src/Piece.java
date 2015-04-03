@@ -94,29 +94,9 @@ abstract class Piece {
     }
 
     private void findCorners(Cell cell){
-        for(Cell c:this.cells) {
-            if (c != cell) {
-                switch (c.getY() - cell.getY()) {
-                    case 0 :
-                        switch (c.getX() - cell.getX()) {
-                            case -1 : cell.corners.setW(); break;
-                            case 1  : cell.corners.setE(); break;
-                        } break;
-                    case -1 :
-                        switch (c.getX() - cell.getX()) {
-                            case -1 : cell.corners.setNW(); break;
-                            case 0  : cell.corners.setN();  break;
-                            case 1  : cell.corners.setNE(); break;
-                        } break;
-                    case 1 :
-                        switch (c.getX() - cell.getX()) {
-                            case -1 : cell.corners.setSW(); break;
-                            case 0  : cell.corners.setS();  break;
-                            case 1  : cell.corners.setSE(); break;
-                        } break;
-                }
-            }
-        }
+        this.cells.stream()
+                .filter(c -> c != cell)
+                .forEach(c -> cell.corners.setIfNear(c.getX() - cell.getX(), c.getY() - cell.getY()) );
     }
 
     protected boolean cannotOverlap(Piece that){

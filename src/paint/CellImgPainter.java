@@ -29,6 +29,7 @@ import java.util.HashMap;
 
 
 public class CellImgPainter extends AbstractCellPainter {
+    private static final int tileGridSize = 6;
     private BufferedImage image = null;
     private int sx,sy;
     private HashMap<CornerType,BufferedImage> nwImages, neImages, swImages, seImages;
@@ -41,8 +42,8 @@ public class CellImgPainter extends AbstractCellPainter {
     public CellImgPainter(String fileName) {
         try {
             this.image = ImageIO.read(getClass().getResource(fileName));
-            this.sx = this.image.getWidth() / 6;
-            this.sy = this.image.getHeight() /6;
+            this.sx = this.image.getWidth() / CellImgPainter.tileGridSize;
+            this.sy = this.image.getHeight() / CellImgPainter.tileGridSize;
         } catch (IOException e) {
             System.err.printf("No image file %s found", fileName);
             System.exit(1);
