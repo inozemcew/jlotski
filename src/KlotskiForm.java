@@ -77,7 +77,7 @@ public class KlotskiForm {
     }
 
     private void languageChanged(String lang) {
-        class Helper {
+         class Helper {
             void traverse(Container container) {
                 for (Component c : container.getComponents()) {
                     update(c);
@@ -113,8 +113,8 @@ public class KlotskiForm {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            UIManager.LookAndFeelInfo[] f = UIManager.getInstalledLookAndFeels();
-            for(UIManager.LookAndFeelInfo i:f) System.err.println(i.getClassName());
+            //UIManager.LookAndFeelInfo[] f = UIManager.getInstalledLookAndFeels();
+            //for(UIManager.LookAndFeelInfo i:f) System.err.println(i.getClassName());
             //UIManager.setLookAndFeel("joxy.JoxyLookAndFeel");
             } catch (Exception e) {
                 System.err.println("No system specific look&fell. Using default.");
@@ -151,7 +151,9 @@ public class KlotskiForm {
 
         private void actionUndo() {
             KlotskiForm.this.board.currentLevel.undo();
-            KlotskiForm.this.movesLabel.setText(formatMovesMsg(Integer.toString(KlotskiForm.this.board.currentLevel.getMovesCount())));
+            KlotskiForm.this.movesLabel.setText(
+                    formatMovesMsg(Integer.toString(KlotskiForm.this.board.currentLevel.getMovesCount()))
+            );
             frame.repaint();
         }
 
@@ -351,7 +353,9 @@ public class KlotskiForm {
         }
 
         public String[] getLanguages() {
-            return this.translations.stream().map(Enum::name).toArray(String[]::new);
+            return this.translations.stream()
+                    .map(locale -> locale.name())
+                    .toArray(String[]::new);
         }
 
         public String getDefaultLanguage() {
@@ -359,7 +363,7 @@ public class KlotskiForm {
             return this.translations.stream()
                     .filter(t -> defaultLocale.getCountry().equals(t.getCountry())
                             && defaultLocale.getLanguage().equals(t.getLang()))
-                    .map(Enum::name)
+                    .map(locale -> locale.name())
                     .findFirst().orElse(Locales.English.name());
         }
 

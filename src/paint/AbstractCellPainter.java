@@ -17,8 +17,8 @@ public abstract class AbstractCellPainter implements CellPainter {
         this.y = y;
         this.xw = x+w;
         this.yh = y+h;
-//        this.w = w;
-//        this.h = h;
+        this.w = w;
+        this.h = h;
         this.w1 = (w+1)/2;
         this.h1 = (h+1)/2;
         this.w2 = w/2;
